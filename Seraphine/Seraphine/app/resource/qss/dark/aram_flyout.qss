@@ -1,0 +1,36 @@
+#titleLabel {
+    color: white;
+    font: bold 18px 'Microsoft YaHei', 'Segoe UI';
+}
+
+#damageDealtLabel,
+#damageReceivedLabel,
+#healingIncreaseLabel,
+#shieldIncreaseLabel,
+#abilityHasteLabel,
+#tenacityLabel,
+#descriptionLabel {
+    color: white;
+    font: 14px 'Microsoft YaHei', 'Segoe UI';
+}
+
+
+#damageDealtValueLabel,
+#damageReceivedValueLabel,
+#healingIncreaseValueLabel,
+#shieldIncreaseValueLabel,
+#abilityHasteValueLabel,
+#tenacityValueLabel,
+#descriptionLabel {
+    font: 14px 'Microsoft YaHei', 'Segoe UI';
+}
+
+#powerByLabel {
+    font: 12px 'Microsoft YaHei', 'Segoe UI';
+    color: gray;
+}
+
+#descriptionLabel {
+    border-top: 1px solid rgba(0, 0, 0, 80);
+    margin-top: 10px;
+}

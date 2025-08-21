@@ -1,0 +1,199 @@
+SearchInterface {
+    border: none;
+    background-color: transparent;
+}
+
+GamesView {
+    border: 1px solid rgba(0, 0, 0, 0.095);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.667);
+}
+
+GamesTab {
+    /* border-right: 1px solid rgb(230, 230, 230); */
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-right: 1px solid rgba(0, 0, 0, 0.095);
+    background-color: rgba(255, 255, 255, 0.667);
+}
+
+GamesTab>QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+}
+
+#emptyLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+}
+
+GameTab {
+    border: 1px solid;
+    border-radius: 6px;
+}
+
+GameTab[selected=true] {
+    border-width: 3px;
+}
+
+GameTab>QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+}
+
+GameTab>#time {
+    font: 12px;
+}
+
+GameTab>#kills {
+    font: 12px;
+}
+
+GameTab>#slash1 {
+    font: 12px;
+}
+
+GameTab>#deaths {
+    font: 12px;
+}
+
+GameTab>#slash2 {
+    font: 12px;
+}
+
+GameTab>#assists {
+    font: 12px;
+}
+
+GameDetailView {
+    /* border-left: 1px solid rgb(230, 230, 230);
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px; */
+    background-color: transparent;
+}
+
+GameTitleBar>#resultLabel {
+    font: bold 28px 'Segoe UI', 'Microsoft YaHei';
+}
+
+GameTitleBar>#infoLabel {
+    font: 12px 'Segoe UI', 'Microsoft YaHei';
+}
+
+GameTitleBar {
+    border-radius: 6px;
+    border: 1px solid;
+}
+
+GameTitleBar {
+    border: 1px solid rgba(0, 0, 0, 0.095);
+    border-radius: 6px;
+    background-color: rgba(245, 245, 245, 0.667);
+}
+
+TeamView {
+    border: 1px solid rgba(0, 0, 0, 0.095);
+    border-radius: 6px;
+    background-color: rgba(245, 245, 245, 0.667);
+}
+
+TeamView {
+    border: 1px solid rgba(0, 0, 0, 0.095);
+    border-radius: 6px;
+    background-color: rgba(245, 245, 245, 0.667);
+}
+
+TeamView>#titleBarWidget>QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    /* border: 1px solid black; */
+}
+
+#titleBarWidget>#teamResult {
+    font: bold 18px 'Segoe UI', 'Microsoft YaHei';
+    padding-left: 1px;
+}
+
+#titleBarWidget>#dmgIconLabel {
+    font: bold 14px 'Segoe UI', 'Microsoft YaHei';
+    color: rgb(160, 155, 140)
+}
+
+#titleBarWidget {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    /* border-bottom: none; */
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+
+SummonerInfoBar {
+    /* border: 1px solid rgba(0, 0, 0, 0.095);
+    border-radius: 6px; */
+    /* background: transparent; */
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+}
+
+#gameScrollArea {
+    border: none;
+    background: transparent;
+}
+
+#scrollWidget {
+    border: none;
+    background: transparent;
+}
+
+SummonerInfoBar>QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    /* border: 1px solid black; */
+}
+
+
+SummonerInfoBar#currentSummonerWidget>QLabel {
+    font: bold 14px 'Segoe UI', 'Microsoft YaHei';
+    color: --ThemeColorPrimary;
+}
+
+SummonerInfoBar[current=true] {
+    background-color: rgba(233, 233, 233, 0.667);
+}
+
+SummonerName {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    text-align: left;
+    padding: 0px 6px 2px 6px;
+    color: black;
+    border: none;
+    background-color: transparent;
+}
+
+SummonerName:hover {
+    color: --ThemeColorLight1;
+}
+
+SummonerName[pressed=true] {
+    color: --ThemeColorLight3;
+}
+
+SummonerName:disabled {
+    color: rgba(0, 0, 0, 0.43)
+}
+
+SummonerInfoBar#currentSummonerWidget>SummonerName {
+    font: bold;
+    color: --ThemeColorPrimary;
+}
+
+SummonerInfoBar#currentSummonerWidget>SummonerName:hover {
+    font: bold;
+    color: --ThemeColorLight1;
+}
+
+SummonerInfoBar#currentSummonerWidget>SummonerName[pressed=true] {
+    font: bold;
+    color: --ThemeColorLight3;
+}
