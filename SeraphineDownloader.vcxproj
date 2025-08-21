@@ -70,6 +70,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -102,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\zip;D:\projects\Vs\SeraphineDownloader\imgui\backends;D:\projects\Vs\SeraphineDownloader\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -119,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\zip;D:\projects\Vs\SeraphineDownloader\imgui\backends;D:\projects\Vs\SeraphineDownloader\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,43 +135,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AppLogic.cpp" />
-    <ClCompile Include="Downloader.cpp" />
-    <ClCompile Include="FileManager.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="UIManager.cpp" />
-    <ClCompile Include="WindowManager.cpp" />
-    <ClCompile Include="zip\miniz.c" />
+    <ClCompile Include="lib\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="lib\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="lib\imgui\imgui.cpp" />
+    <ClCompile Include="lib\imgui\imgui_demo.cpp" />
+    <ClCompile Include="lib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="lib\imgui\imgui_tables.cpp" />
+    <ClCompile Include="lib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="lib\zip\miniz.c" />
+    <ClCompile Include="src\AppLogic.cpp" />
+    <ClCompile Include="src\Downloader.cpp" />
+    <ClCompile Include="src\FileManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\UIManager.cpp" />
+    <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppLogic.h" />
-    <ClInclude Include="Downloader.h" />
-    <ClInclude Include="FileManager.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_dx11.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="resource1.h" />
-    <ClInclude Include="UIManager.h" />
-    <ClInclude Include="WindowManager.h" />
-    <ClInclude Include="zip\miniz.h" />
+    <ClInclude Include="include\AppLogic.h" />
+    <ClInclude Include="include\Downloader.h" />
+    <ClInclude Include="include\FileManager.h" />
+    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\UIManager.h" />
+    <ClInclude Include="include\WindowManager.h" />
+    <ClInclude Include="lib\imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="lib\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="lib\imgui\imconfig.h" />
+    <ClInclude Include="lib\imgui\imgui.h" />
+    <ClInclude Include="lib\imgui\imgui_internal.h" />
+    <ClInclude Include="lib\imgui\imstb_rectpack.h" />
+    <ClInclude Include="lib\imgui\imstb_textedit.h" />
+    <ClInclude Include="lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="lib\zip\miniz.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SeraphineDownloader.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="favicon.ico" />
+    <Image Include="resource\favicon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
