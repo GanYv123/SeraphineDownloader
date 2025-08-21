@@ -25,13 +25,15 @@ public:
     bool CloseProgram(LogCallback callback = nullptr);
 
     // 状态访问器
-    bool IsExtracting() const { return m_extracting; }
-    bool IsExtracted() const { return m_extracted; }
+    bool IsExtracting() const { return m_extracting.load(); }
+    bool IsExtracted() const { return m_extracted.load(); }
 
 private:
     std::mutex m_mutex;
-    bool m_extracting = false;
-    bool m_extracted = false;
+    //bool m_extracting = false; // 使用 atomic 重构
+    std::atomic<bool> m_extracting;
+    //bool m_extracted = false;
+    std::atomic<bool> m_extracted;
 
     HANDLE m_processHandle = nullptr;
     DWORD m_processId = 0;

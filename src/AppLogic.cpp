@@ -30,16 +30,6 @@ void AppLogic::OnPauseClicked()
     }
 }
 
-std::string AppLogic::GetStatusText() const
-{
-    switch(m_state){
-    case State::Stopped: return "Stopped";
-    case State::Running: return "Running";
-    case State::Paused:  return "Paused";
-    default: return "Unknown";
-    }
-}
-
 void AppLogic::AddLog(const std::string& message, LogEntry::Level level)
 {
     auto now = std::chrono::system_clock::now();

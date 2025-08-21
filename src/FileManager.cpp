@@ -13,13 +13,15 @@
 
 FileManager::FileManager() {}
 FileManager::~FileManager() {
-    CloseProgram();
+    // CloseProgram();
 }
 
 // ----------------- 解压 -----------------
 void FileManager::ExtractZip(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback)
 {
     std::string zipPathA(zipPath.begin(), zipPath.end());
+    //std::filesystem::path zipPathA = std::filesystem::u8path(zipPath);
+
     mz_zip_archive zip_archive;
     memset(&zip_archive, 0, sizeof(zip_archive));
 
@@ -50,26 +52,31 @@ void FileManager::ExtractZip(const std::wstring& zipPath, const std::wstring& de
     }
 
     mz_zip_reader_end(&zip_archive);
-    m_extracted = true;
+    m_extracted.store(true);
     if(callback) callback(u8"[INFO] 解压完成", 1);
 }
 
 bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback)
 {
-    if(m_extracting || m_extracted){
+    if(m_extracting.load() || m_extracted.load()){
         if(callback) callback(u8"[WARN] 正在解压或已解压完成", 1);
         return false;
     }
-    m_extracting = true;
+    m_extracting.store(true);
 
-    std::thread([=](){
-        ExtractZip(zipPath, destFolder, callback);
-        m_extracting = false;
+    std::thread([this, zipPath, destFolder, callback](){
+        try{
+            ExtractZip(zipPath, destFolder, callback);
+        } catch(...){
+            if(callback) callback(u8"[ERROR] 解压失败", 1);
+        }
+        m_extracting.store(false);
         }).detach();
 
     if(callback) callback(u8"[INFO] 异步解压启动", 1);
     return true;
 }
+
 
 // ----------------- 快捷方式 -----------------
 bool FileManager::CreateShortcut(const std::wstring& relativeExePath, const std::wstring& shortcutName, LogCallback callback)

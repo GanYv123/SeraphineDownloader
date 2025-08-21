@@ -21,9 +21,6 @@ public:
     void OnStartClicked();
     void OnPauseClicked();
 
-    // 获取当前状态文本（UI显示）
-    std::string GetStatusText() const;
-
     // 添加日志
     void AddLog(const std::string& message, LogEntry::Level level = LogEntry::Level::Info);
 
