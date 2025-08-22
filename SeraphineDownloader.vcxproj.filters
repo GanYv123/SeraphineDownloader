@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Imgui\backends">
       <UniqueIdentifier>{82453aa6-82ec-47ec-84a6-1dc09e12020d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThreadPool">
+      <UniqueIdentifier>{35ed2440-dfd4-4bf0-be70-3d79d2369454}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AppLogic.cpp">
@@ -120,6 +123,12 @@
       <Filter>Header Files\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\threadpool\BS_thread_pool.hpp">
+      <Filter>Header Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CpuInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,10 +1,12 @@
+#include "AppLogic.h"        // 应用逻辑类（你自己的业务逻辑，比如日志、按钮状态等）
 #include "WindowManager.h"   // 管理窗口和 DirectX 设备的封装类
 #include "UIManager.h"       // 管理 ImGui 初始化/渲染的封装类
-#include "AppLogic.h"        // 应用逻辑类（你自己的业务逻辑，比如日志、按钮状态等）
+
 
 // Win32 应用入口
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
+
     // 管理窗口（窗口创建、DX设备、SwapChain）
     WindowManager windowManager;
 

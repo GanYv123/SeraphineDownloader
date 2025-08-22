@@ -1,5 +1,5 @@
-#include "UIManager.h"
 #include "AppLogic.h"
+#include "UIManager.h"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
@@ -106,7 +106,7 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
 
     // 下载
     if(ImGui::Button(u8"下载文件", ImVec2(buttonWidth1, buttonHeight))){
-        downloader.StartDownload("http://07210d00.cn:8080/download?file=Seraphine.zip", "./Seraphine.zip");
+        downloader.StartDownload("http://07210d00.cn:8080/download?file=Seraphine.zip", "./Seraphine.zip",logic);
         logic.AddLog(u8"[INFO] 下载开始", LogEntry::Level::Info);
     }
     ImGui::SameLine();
@@ -115,7 +115,7 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     bool extractEnabled = downloader.IsFinished() && !fileManager.IsExtracted() && !fileManager.IsExtracting();
     if(!extractEnabled) ImGui::BeginDisabled();
     if(ImGui::Button(u8"解压文件", ImVec2(buttonWidth1, buttonHeight))){
-        fileManager.ExtractZipAsync(L"Seraphine.zip", L"Seraphine",
+        fileManager.ExtractZipAsync(L"Seraphine.zip", L"Seraphine",logic,
             [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
     }
     if(!extractEnabled) ImGui::EndDisabled();

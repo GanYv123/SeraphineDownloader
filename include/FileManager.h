@@ -1,8 +1,10 @@
 #pragma once
+#include "AppLogic.h"
 #include <string>
 #include <functional>
 #include <mutex>
 #include <windows.h>
+
 
 class FileManager
 {
@@ -13,7 +15,8 @@ public:
     ~FileManager();
 
     // 异步解压
-    bool ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback = nullptr);
+    bool ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, 
+        AppLogic& logic,LogCallback callback = nullptr);
 
     // 创建桌面快捷方式
     bool CreateShortcut(const std::wstring& relativeExePath, const std::wstring& shortcutName, LogCallback callback = nullptr);

@@ -3,6 +3,7 @@
 #include <thread>
 #include <atomic>
 #include <functional>
+#include <AppLogic.h>
 
 class Downloader
 {
@@ -12,7 +13,7 @@ public:
     Downloader();
     ~Downloader();
 
-    void StartDownload(const std::string& url, const std::string& savePath);
+    void StartDownload(const std::string& url, const std::string& savePath, AppLogic& logic);
 
     float GetProgress() const { return m_progress; }
     std::string GetStatus() const;
@@ -24,7 +25,7 @@ public:
 private:
     void DownloadThread(const std::string& url, const std::string& savePath);
 
-    std::thread m_thread;
+    //std::thread m_thread;
     std::atomic<bool> m_downloading;
     std::atomic<float> m_progress; // 下载进度
     std::atomic<bool> m_success;   // 是否成功

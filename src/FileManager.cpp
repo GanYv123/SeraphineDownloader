@@ -56,7 +56,8 @@ void FileManager::ExtractZip(const std::wstring& zipPath, const std::wstring& de
     if(callback) callback(u8"[INFO] 解压完成", 1);
 }
 
-bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback)
+bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, 
+    AppLogic& logic, LogCallback callback)
 {
     if(m_extracting.load() || m_extracted.load()){
         if(callback) callback(u8"[WARN] 正在解压或已解压完成", 1);
@@ -64,14 +65,15 @@ bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstrin
     }
     m_extracting.store(true);
 
-    std::thread([this, zipPath, destFolder, callback](){
+    logic.SubmitTask([zipPath, destFolder, callback, this]{
         try{
             ExtractZip(zipPath, destFolder, callback);
         } catch(...){
             if(callback) callback(u8"[ERROR] 解压失败", 1);
         }
         m_extracting.store(false);
-        }).detach();
+    });
+
 
     if(callback) callback(u8"[INFO] 异步解压启动", 1);
     return true;

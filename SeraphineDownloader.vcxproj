@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\lib\threadpool;D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\lib\threadpool;D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AppLogic.h" />
+    <ClInclude Include="include\CpuInfo.h" />
     <ClInclude Include="include\Downloader.h" />
     <ClInclude Include="include\FileManager.h" />
     <ClInclude Include="include\resource.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="lib\imgui\imstb_rectpack.h" />
     <ClInclude Include="lib\imgui\imstb_textedit.h" />
     <ClInclude Include="lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="lib\threadpool\BS_thread_pool.hpp" />
     <ClInclude Include="lib\zip\miniz.h" />
   </ItemGroup>
   <ItemGroup>

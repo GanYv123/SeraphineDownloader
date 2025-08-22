@@ -3,10 +3,18 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
+#include "CpuInfo.h"
 
 AppLogic::AppLogic() : m_state(State::Stopped)
 {
-    AddLog(u8"程序启动成功", LogEntry::Level::Info);
+    // 获取核心数
+    size_t threadCount = CpuInfo::PhysicalCores();
+    // 创建线程池
+    m_pool = std::make_shared<BS::thread_pool<>>(threadCount);
+    // 记录日志
+    std::ostringstream oss;
+    oss << u8"程序启动成功，线程池线程数: " << threadCount;
+    AddLog(oss.str(), LogEntry::Level::Info);
 }
 
 AppLogic::~AppLogic() {}
