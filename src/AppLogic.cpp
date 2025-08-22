@@ -11,25 +11,6 @@ AppLogic::AppLogic() : m_state(State::Stopped)
 
 AppLogic::~AppLogic() {}
 
-void AppLogic::OnStartClicked()
-{
-    if(m_state == State::Stopped || m_state == State::Paused){
-        m_state = State::Running;
-        AddLog(u8"点击 Start 按钮", LogEntry::Level::Info);
-    }
-}
-
-void AppLogic::OnPauseClicked()
-{
-    if(m_state == State::Running){
-        m_state = State::Paused;
-        AddLog(u8"点击 Pause 按钮", LogEntry::Level::Info);
-    } else if(m_state == State::Paused){
-        m_state = State::Stopped;
-        AddLog(u8"点击 Stop 按钮", LogEntry::Level::Info);
-    }
-}
-
 void AppLogic::AddLog(const std::string& message, LogEntry::Level level)
 {
     auto now = std::chrono::system_clock::now();

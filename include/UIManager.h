@@ -25,7 +25,7 @@ private:
     void RenderFunctionButtons(AppLogic& logic);
     void RenderDownloadProgress();
     void RenderLogOutput(AppLogic& logic);
-    bool RenderExitButton();
+    bool RenderExitButton(HWND hwnd);
 
     // 成员变量（替代静态局部变量）
     Downloader downloader;

@@ -17,10 +17,6 @@ public:
     AppLogic();
     ~AppLogic();
 
-    // 按钮事件
-    void OnStartClicked();
-    void OnPauseClicked();
-
     // 添加日志
     void AddLog(const std::string& message, LogEntry::Level level = LogEntry::Level::Info);
 

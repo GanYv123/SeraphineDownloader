@@ -65,7 +65,7 @@ bool UIManager::RenderUI(AppLogic& logic, HWND hwnd)
 
     RenderLogOutput(logic);
 
-    bool exit = RenderExitButton();
+    bool exit = RenderExitButton(hwnd);
 
     ImGui::End();
     return exit;
@@ -188,15 +188,29 @@ void UIManager::RenderLogOutput(AppLogic& logic)
     ImGui::Spacing();
 }
 
-// ---------------- 退出按钮 ----------------
-bool UIManager::RenderExitButton()
+// ---------------- 退出 / 最小化 ----------------
+bool UIManager::RenderExitButton(HWND hwnd)
 {
-    if(ImGui::Button(u8"退出", ImVec2(-1.0f, 30))){
-        return true;
-    }
-    return false;
-}
+    bool exit = false;
 
+    float availWidth = ImGui::GetContentRegionAvail().x;
+    float buttonHeight = 30.0f;
+    float buttonWidth = (availWidth - 5.0f) / 2; // 两个按钮平分一行，中间留 5px
+
+    // 退出按钮
+    if(ImGui::Button(u8"退出", ImVec2(buttonWidth, buttonHeight))){
+        exit = true;
+    }
+
+    ImGui::SameLine();
+
+    // 最小化按钮
+    if(ImGui::Button(u8"最小化", ImVec2(buttonWidth, buttonHeight))){
+        ShowWindow(hwnd, SW_MINIMIZE);
+    }
+
+    return exit;
+}
 
 void UIManager::EndFrame()
 {

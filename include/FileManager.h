@@ -12,8 +12,6 @@ public:
     FileManager();
     ~FileManager();
 
-    // 同步解压
-    void ExtractZip(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback = nullptr);
     // 异步解压
     bool ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback = nullptr);
 
@@ -27,6 +25,9 @@ public:
     // 状态访问器
     bool IsExtracting() const { return m_extracting.load(); }
     bool IsExtracted() const { return m_extracted.load(); }
+private:
+    // 同步解压
+    void ExtractZip(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback = nullptr);
 
 private:
     std::mutex m_mutex;
