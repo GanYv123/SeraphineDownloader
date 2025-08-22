@@ -20,7 +20,7 @@ A simple **Win32 + DirectX11 + ImGui** framework for GUI applications with built
 
 ## 🎬 演示效果
 
-👉 ![1](D:\projects\Vs\SeraphineDownloader\docs\1.gif)
+👉 ![1](.\docs\1.gif)
 
 ---
 
