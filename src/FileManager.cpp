@@ -6,6 +6,8 @@
 #include <shlobj.h>
 #include <shobjidl.h>
 #include <windows.h>
+#include <sstream>
+#include <iomanip>
 
 // miniz 单文件库
 #define MINIZ_HEADER_FILE_ONLY
@@ -13,15 +15,13 @@
 
 FileManager::FileManager() {}
 FileManager::~FileManager() {
-    // CloseProgram();
+    StopMonitoring();
 }
 
-// ----------------- 解压 -----------------
+// ----------------- 同步解压 -----------------
 void FileManager::ExtractZip(const std::wstring& zipPath, const std::wstring& destFolder, LogCallback callback)
 {
     std::string zipPathA(zipPath.begin(), zipPath.end());
-    //std::filesystem::path zipPathA = std::filesystem::u8path(zipPath);
-
     mz_zip_archive zip_archive;
     memset(&zip_archive, 0, sizeof(zip_archive));
 
@@ -56,9 +56,16 @@ void FileManager::ExtractZip(const std::wstring& zipPath, const std::wstring& de
     if(callback) callback(u8"[INFO] 解压完成", 1);
 }
 
-bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder, 
+// ----------------- 异步解压 -----------------
+bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstring& destFolder,
     AppLogic& logic, LogCallback callback)
 {
+    if(!m_isExistZip){ 
+        if(callback) callback(u8"[ERROR] 解压失败 压缩包不存在", 1);
+        m_extracting.store(false);
+        return false;
+    }
+
     if(m_extracting.load() || m_extracted.load()){
         if(callback) callback(u8"[WARN] 正在解压或已解压完成", 1);
         return false;
@@ -72,13 +79,11 @@ bool FileManager::ExtractZipAsync(const std::wstring& zipPath, const std::wstrin
             if(callback) callback(u8"[ERROR] 解压失败", 1);
         }
         m_extracting.store(false);
-    });
-
+        });
 
     if(callback) callback(u8"[INFO] 异步解压启动", 1);
     return true;
 }
-
 
 // ----------------- 快捷方式 -----------------
 bool FileManager::CreateShortcut(const std::wstring& relativeExePath, const std::wstring& shortcutName, LogCallback callback)
@@ -91,11 +96,9 @@ bool FileManager::CreateShortcut(const std::wstring& relativeExePath, const std:
         return false;
     }
 
-    // 当前 EXE 所在目录
     wchar_t exePath[MAX_PATH] = { 0 };
     GetModuleFileName(NULL, exePath, MAX_PATH);
     std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
-
     std::filesystem::path targetFullPath = exeDir / relativeExePath;
 
     CComPtr<IShellLink> pShellLink;
@@ -133,7 +136,6 @@ bool FileManager::RunProgram(const std::wstring& relativeExePath, LogCallback ca
         return false;
     }
 
-    // 当前 EXE 所在目录
     wchar_t exePath[MAX_PATH] = { 0 };
     GetModuleFileName(NULL, exePath, MAX_PATH);
     std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
@@ -168,4 +170,39 @@ bool FileManager::CloseProgram(LogCallback callback)
     m_processId = 0;
     if(callback) callback(u8"[INFO] 程序已关闭", 1);
     return true;
+}
+
+// ----------------- 状态监控 -----------------
+void FileManager::StartMonitoring(const std::wstring& zipPath, const std::wstring& destFolder, AppLogic& logic)
+{
+    m_monitoredZip = zipPath;
+    m_monitoredDest = destFolder;
+    m_stopMonitor.store(false);
+
+    logic.SubmitTask([this]{
+        while(!m_stopMonitor.load()){
+            m_isExistZip.store(std::filesystem::exists(m_monitoredZip));
+            bool extracted = std::filesystem::exists(m_monitoredDest) && !std::filesystem::is_empty(m_monitoredDest);
+
+            if(!m_isExistZip){
+                m_extracting.store(false);
+                m_extracted.store(false);
+            } else if(extracted){
+                m_extracting.store(false);
+                m_extracted.store(true);
+            } else if(m_isExistZip && !extracted){
+                m_extracting.store(false);
+                m_extracted.store(false);
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        });
+}
+
+void FileManager::StopMonitoring()
+{
+    m_stopMonitor.store(true);
+    if(m_monitorThread.joinable())
+        m_monitorThread.join();
 }

@@ -5,14 +5,16 @@
 #include "imgui_impl_dx11.h"
 #include <windows.h>
 
-UIManager::UIManager() : m_initialized(false) {}
+UIManager::UIManager(AppLogic& logic) : m_initialized(false) {    // 启动状态监控（程序启动时就调用）
+    fileManager.StartMonitoring(L"./Seraphine.zip", L"./Seraphine",logic);
+}
 UIManager::~UIManager() { Cleanup(); }
 
 bool UIManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
+     
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.IniFilename = NULL;  // 不保存布局文件
     //io.Fonts->AddFontDefault();
@@ -100,47 +102,68 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     float availWidth = ImGui::GetContentRegionAvail().x;
     float buttonHeight = 28.0f;
 
-    // 第一行按钮
+    // 状态显示（调试/直观）
+    ImGui::Text(u8"是否下载: %s | 压缩包: %s | 已解压: %s",
+        (downloader.IsFinished()|| fileManager.IsExtracted()) ? u8"是" : u8"否",
+        fileManager.IsExitZip() ? u8"存在" : u8"不存在",
+        fileManager.IsExtracted() ? u8"是" : u8"否");
+
+    ImGui::Spacing();
+
+    // ---------------- 第一行按钮 ----------------
     int firstRowButtons = 3;
     float buttonWidth1 = (availWidth - (firstRowButtons - 1) * 5.0f) / firstRowButtons;
 
-    // 下载
+    // 下载按钮
     if(ImGui::Button(u8"下载文件", ImVec2(buttonWidth1, buttonHeight))){
-        downloader.StartDownload("http://07210d00.cn:8080/download?file=Seraphine.zip", "./Seraphine.zip",logic);
+        downloader.StartDownload(
+            "http://07210d00.cn:8080/download?file=Seraphine.zip",
+            "./Seraphine.zip",
+            logic
+        );
         logic.AddLog(u8"[INFO] 下载开始", LogEntry::Level::Info);
     }
     ImGui::SameLine();
 
-    // 解压
-    bool extractEnabled = downloader.IsFinished() && !fileManager.IsExtracted() && !fileManager.IsExtracting();
+    // 解压按钮
+    bool extractEnabled = fileManager.IsExitZip();
     if(!extractEnabled) ImGui::BeginDisabled();
     if(ImGui::Button(u8"解压文件", ImVec2(buttonWidth1, buttonHeight))){
-        fileManager.ExtractZipAsync(L"Seraphine.zip", L"Seraphine",logic,
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+        fileManager.ExtractZipAsync(
+            L"Seraphine.zip",
+            L"Seraphine",
+            logic,
+            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); }
+        );
     }
     if(!extractEnabled) ImGui::EndDisabled();
     ImGui::SameLine();
 
-    // 创建快捷方式
+    // 创建桌面快捷方式
     bool shortcutEnabled = fileManager.IsExtracted();
     if(!shortcutEnabled) ImGui::BeginDisabled();
     if(ImGui::Button(u8"创建桌面快捷方式", ImVec2(buttonWidth1, buttonHeight))){
-        fileManager.CreateShortcut(L"Seraphine\\Seraphine\\Seraphine.exe", L"Seraphine",
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+        fileManager.CreateShortcut(
+            L"Seraphine\\Seraphine\\Seraphine.exe",
+            L"Seraphine",
+            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); }
+        );
     }
     if(!shortcutEnabled) ImGui::EndDisabled();
 
     ImGui::NewLine();
 
-    // 第二行按钮
+    // ---------------- 第二行按钮 ----------------
     int secondRowButtons = 2;
     float buttonWidth2 = (availWidth - (secondRowButtons - 1) * 5.0f) / secondRowButtons;
 
     bool runEnabled = fileManager.IsExtracted();
     if(!runEnabled) ImGui::BeginDisabled();
     if(ImGui::Button(u8"打开程序", ImVec2(buttonWidth2, buttonHeight))){
-        fileManager.RunProgram(L"Seraphine\\Seraphine\\Seraphine.exe",
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+        fileManager.RunProgram(
+            L"Seraphine\\Seraphine\\Seraphine.exe",
+            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); }
+        );
     }
     if(!runEnabled) ImGui::EndDisabled();
     ImGui::SameLine();
@@ -148,12 +171,14 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     if(!runEnabled) ImGui::BeginDisabled();
     if(ImGui::Button(u8"关闭程序", ImVec2(buttonWidth2, buttonHeight))){
         fileManager.CloseProgram(
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); }
+        );
     }
     if(!runEnabled) ImGui::EndDisabled();
 
     ImGui::Spacing();
 }
+
 
 // ---------------- 下载进度 ----------------
 void UIManager::RenderDownloadProgress()
@@ -170,7 +195,7 @@ void UIManager::RenderDownloadProgress()
 void UIManager::RenderLogOutput(AppLogic& logic)
 {
     ImGui::Text(u8"日志输出：");
-    ImGui::BeginChild("LogRegion", ImVec2(0, 130), true, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("LogRegion", ImVec2(0, 110), true, ImGuiWindowFlags_HorizontalScrollbar);
     for(const auto& entry : logic.GetLogs()){
         ImVec4 color = ImVec4(1, 1, 1, 1);
         switch(entry.level){

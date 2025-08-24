@@ -9,7 +9,7 @@ class AppLogic;
 class UIManager
 {
 public:
-    UIManager();
+    UIManager(AppLogic& logic);
     ~UIManager();
 
     bool Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context);

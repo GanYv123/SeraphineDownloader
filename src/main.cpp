@@ -10,11 +10,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
     // 管理窗口（窗口创建、DX设备、SwapChain）
     WindowManager windowManager;
 
-    // 管理 ImGui UI（初始化、帧循环、渲染）
-    UIManager uiManager;
-
     // 你的业务逻辑类，放按钮状态、日志函数、其他功能
     AppLogic appLogic;
+
+    // 管理 ImGui UI（初始化、帧循环、渲染）
+    UIManager uiManager(appLogic);
 
     // 初始化窗口（宽 600，高 400）
     if(!windowManager.Initialize(hInstance, 600, 400)){
