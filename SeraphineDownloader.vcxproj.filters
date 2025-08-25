@@ -78,6 +78,9 @@
     <ClCompile Include="lib\imgui\imgui_widgets.cpp">
       <Filter>Source Files\Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AppLogic.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files\ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="include\CpuInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

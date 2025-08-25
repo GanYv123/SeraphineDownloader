@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <winhttp.h>
 #include <fstream>
+#include <sstream>
 #include <chrono>
 #include <iostream>
 
@@ -32,6 +33,76 @@ void Downloader::StartDownload(const std::string& url, const std::string& savePa
         }
         m_downloading = false; // 确保状态重置
         });
+}
+
+std::vector<std::string> Downloader::FetchFileList(const std::string& url)
+{
+    std::vector<std::string> files;
+
+    try{
+        URL_COMPONENTS components = { sizeof(URL_COMPONENTS) };
+        wchar_t hostName[256], urlPath[1024];
+        components.lpszHostName = hostName;
+        components.dwHostNameLength = _countof(hostName);
+        components.lpszUrlPath = urlPath;
+        components.dwUrlPathLength = _countof(urlPath);
+
+        std::wstring wurl(url.begin(), url.end());
+        if(!WinHttpCrackUrl(wurl.c_str(), 0, 0, &components)){
+            if(m_logCallback) m_logCallback("Failed to parse URL", 2);
+            return files;
+        }
+
+        HINTERNET hSession = WinHttpOpen(L"MyDownloader/1.0",
+            WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, NULL, NULL, 0);
+        HINTERNET hConnect = WinHttpConnect(hSession, components.lpszHostName,
+            components.nPort, 0);
+        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"GET", components.lpszUrlPath,
+            NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
+            (components.nScheme == INTERNET_SCHEME_HTTPS) ? WINHTTP_FLAG_SECURE : 0);
+
+        if(!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+            WINHTTP_NO_REQUEST_DATA, 0, 0, 0)){
+            if(m_logCallback) m_logCallback("Failed to send request", 2);
+            return files;
+        }
+        WinHttpReceiveResponse(hRequest, NULL);
+
+        DWORD dwSize = 0;
+        std::stringstream ss;
+        do{
+            DWORD dwDownloaded = 0;
+            if(!WinHttpQueryDataAvailable(hRequest, &dwSize)) break;
+            if(dwSize == 0) break;
+
+            std::vector<char> buffer(dwSize + 1);
+            if(!WinHttpReadData(hRequest, buffer.data(), dwSize, &dwDownloaded)) break;
+
+            buffer[dwDownloaded] = '\0';
+            ss << buffer.data();
+        } while(dwSize > 0);
+
+        // 关闭句柄
+        WinHttpCloseHandle(hRequest);
+        WinHttpCloseHandle(hConnect);
+        WinHttpCloseHandle(hSession);
+
+        // 解析结果（服务器返回是文本，比如："- Seraphine.zip\n- GameB.zip\n"）
+        std::string line;
+        while(std::getline(ss, line)){
+            if(line.size() > 2 && line[0] == '-'){
+                files.push_back(line.substr(2)); // 去掉 "- "
+            }
+        }
+
+        if(m_logCallback){
+            m_logCallback("Fetched file list: " + std::to_string(files.size()) + " items", 0);
+        }
+    } catch(const std::exception& e){
+        if(m_logCallback) m_logCallback(std::string("Exception in FetchFileList: ") + e.what(), 2);
+    }
+
+    return files;
 }
 
 std::string Downloader::GetStatus() const

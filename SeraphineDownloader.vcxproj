@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\lib\threadpool;D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\lib\threadpool;$(ProjectDir)\include;$(ProjectDir)\lib\zip;$(ProjectDir)\lib\imgui;$(ProjectDir)\lib\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -118,6 +118,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -127,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\projects\Vs\SeraphineDownloader\lib\threadpool;D:\projects\Vs\SeraphineDownloader\include;D:\projects\Vs\SeraphineDownloader\lib\zip;D:\projects\Vs\SeraphineDownloader\lib\imgui\backends;D:\projects\Vs\SeraphineDownloader\lib\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\lib\threadpool;$(ProjectDir)\include;$(ProjectDir)\lib\zip;$(ProjectDir)\lib\imgui;$(ProjectDir)\lib\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,6 +138,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lib\imgui\backends\imgui_impl_dx11.cpp" />
@@ -145,6 +151,7 @@
     <ClCompile Include="lib\imgui\imgui_tables.cpp" />
     <ClCompile Include="lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="lib\zip\miniz.c" />
+    <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\AppLogic.cpp" />
     <ClCompile Include="src\Downloader.cpp" />
     <ClCompile Include="src\FileManager.cpp" />
@@ -153,6 +160,7 @@
     <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Application.h" />
     <ClInclude Include="include\AppLogic.h" />
     <ClInclude Include="include\CpuInfo.h" />
     <ClInclude Include="include\Downloader.h" />

@@ -5,6 +5,7 @@
 #include "FileManager.h"
 
 class AppLogic;
+class ImGuiIO;
 
 class UIManager
 {
@@ -26,10 +27,15 @@ private:
     void RenderDownloadProgress();
     void RenderLogOutput(AppLogic& logic);
     bool RenderExitButton(HWND hwnd);
+    // 加载中文字体
+    void AddChineseFont(ImGuiIO& io);
 
     // 成员变量（替代静态局部变量）
     Downloader downloader;
     FileManager fileManager;
     bool dragging = false;
     POINT drag_offset{};
+
+    std::vector<std::string> m_fileList;
+    int m_selectedIndex{-1};
 };

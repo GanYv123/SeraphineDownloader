@@ -14,7 +14,7 @@ public:
     ~Downloader();
 
     void StartDownload(const std::string& url, const std::string& savePath, AppLogic& logic);
-
+    std::vector<std::string> FetchFileList(const std::string& url); // 获取服务器文件列表
     float GetProgress() const { return m_progress; }
     std::string GetStatus() const;
     bool IsDownloading() const { return m_downloading; }
