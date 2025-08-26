@@ -7,6 +7,7 @@
 
 UIManager::UIManager(AppLogic &logic) : m_initialized(false)
 {
+
     // 启动状态监控线程
     fileManager.StartMonitoring(logic);
     fileManager.UpdateMonitoredFile(L"");
@@ -21,6 +22,7 @@ bool UIManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext 
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
     io.IniFilename = NULL; // 不保存布局文件
+
     // 添加中文字体
     AddChineseFont(io);
 
@@ -58,6 +60,7 @@ void UIManager::BeginFrame()
 
 // 主渲染函数
 bool UIManager::RenderUI(AppLogic &logic, HWND hwnd)
+
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
@@ -105,6 +108,7 @@ void UIManager::RenderDragWindow(HWND hwnd)
 
 // ---------------- 功能按钮 -----------------
 void UIManager::RenderFunctionButtons(AppLogic &logic)
+
 {
     float availWidth = ImGui::GetContentRegionAvail().x;
     float buttonHeight = 24.0f;
@@ -174,6 +178,7 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
 
     // ---------- 功能按钮区（解压 / 快捷方式 / 打开 / 关闭） ----------
     bool extractEnabled = hasSelected && fileManager.IsExitZip();
+
     if (!extractEnabled)
         ImGui::BeginDisabled();
     if (ImGui::Button(u8"解压文件", ImVec2(fourthWidth, buttonHeight)) && hasSelected)
@@ -183,16 +188,19 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
                                     logic,
                                     [&](const std::string &msg, int level)
                                     { logic.AddLog(msg, (LogEntry::Level) level); });
+
     }
     if (!extractEnabled)
         ImGui::EndDisabled();
     ImGui::SameLine();
 
     bool shortcutEnabled = fileManager.IsExtracted();
+
     if (!shortcutEnabled)
         ImGui::BeginDisabled();
     if (ImGui::Button(u8"创建桌面快捷方式", ImVec2(fourthWidth, buttonHeight)))
     {
+
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
         fileManager.CreateShortcut(exePath,
@@ -204,10 +212,12 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
         ImGui::EndDisabled();
     ImGui::SameLine();
 
+
     if (!shortcutEnabled)
         ImGui::BeginDisabled();
     if (ImGui::Button(u8"打开程序", ImVec2(fourthWidth, buttonHeight)))
     {
+
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
         fileManager.RunProgram(exePath,
@@ -224,6 +234,7 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
     {
         fileManager.CloseProgram([&](const std::string &msg, int level)
                                  { logic.AddLog(msg, (LogEntry::Level) level); });
+
     }
     if (!shortcutEnabled)
         ImGui::EndDisabled();
@@ -239,6 +250,7 @@ void UIManager::RenderDownloadProgress()
 
     // ---------- 动态进度条颜色 ----------
     ImVec4 barColor;
+
     if (finished)
     {
         barColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // 完成绿色
@@ -309,12 +321,14 @@ void UIManager::RenderLogOutput(AppLogic &logic)
                 color = ImVec4(1, 0, 0, 1);
                 break;
         }
+
         ImGui::PushStyleColor(ImGuiCol_Text, color);
-        ImGui::TextUnformatted(entry.text.c_str());
+        ImGui::TextWrapped("%s", entry.text.c_str()); // 自动换行
         ImGui::PopStyleColor();
     }
     if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
         ImGui::SetScrollHereY(1.0f);
+
     ImGui::EndChild();
     ImGui::Spacing();
 }

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "BS_thread_pool.hpp" // 线程池
+#include "BS_thread_pool.hpp"// 线程池
 #include <future>
 
 struct LogEntry
@@ -27,10 +27,10 @@ public:
     ~AppLogic();
 
     // 添加日志
-    void AddLog(const std::string &message, LogEntry::Level level = LogEntry::Level::Info);
+    void AddLog(const std::string& message, LogEntry::Level level = LogEntry::Level::Info);
 
     // 获取日志列表（线程安全）
-    std::vector<LogEntry> GetLogs() const;
+    void ForEachLog(const std::function<void(const LogEntry&)>& cb) const;
 
     // 对外暴露任务提交接口
     template <typename F, typename... Args>
@@ -40,8 +40,12 @@ public:
 private:
     State m_state;
     mutable std::mutex m_mutex;
-    std::vector<LogEntry> m_logs;
     std::shared_ptr<BS::thread_pool<>> m_pool;
+
+    static constexpr size_t MAX_LOGS = 400;   // 最大日志条数
+    LogEntry m_logs[MAX_LOGS];                // 固定数组
+    size_t m_nextIndex = 0;                   // 下一个写入位置
+    size_t m_count = 0;
 };
 
 template <typename F, typename... Args>
