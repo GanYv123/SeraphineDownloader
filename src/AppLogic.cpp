@@ -1,25 +1,22 @@
-#include "AppLogic.h"
+ï»¿#include "AppLogic.h"
+#include "CpuInfo.h"
 #include <chrono>
+#include <ctime>
 #include <iomanip>
 #include <sstream>
-#include <ctime>
-#include "CpuInfo.h"
 
 AppLogic::AppLogic() : m_state(State::Stopped)
 {
-    // »ñÈ¡ºËÐÄÊý
     size_t threadCount = CpuInfo::PhysicalCores();
-    // ´´½¨Ïß³Ì³Ø
     m_pool = std::make_shared<BS::thread_pool<>>(threadCount);
-    // ¼ÇÂ¼ÈÕÖ¾
     std::ostringstream oss;
-    oss << u8"³ÌÐòÆô¶¯³É¹¦£¬Ïß³Ì³ØÏß³ÌÊý: " << threadCount;
+    oss << u8"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ß³Ì³ï¿½ï¿½ß³ï¿½ï¿½ï¿½: " << threadCount;
     AddLog(oss.str(), LogEntry::Level::Info);
 }
 
 AppLogic::~AppLogic() {}
 
-void AppLogic::AddLog(const std::string& message, LogEntry::Level level)
+void AppLogic::AddLog(const std::string &message, LogEntry::Level level)
 {
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
@@ -30,7 +27,7 @@ void AppLogic::AddLog(const std::string& message, LogEntry::Level level)
     ss << "[" << std::put_time(&tm, "%H:%M:%S") << "] " << message;
 
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_logs.push_back({ level, ss.str() });
+    m_logs.push_back({level, ss.str()});
 }
 
 std::vector<LogEntry> AppLogic::GetLogs() const

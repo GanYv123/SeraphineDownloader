@@ -1,0 +1,27 @@
+Language: Cpp
+BasedOnStyle: LLVM # LLVM 基础更接近阿里风格
+IndentWidth: 4
+UseTab: Never
+
+# 大括号风格
+BreakBeforeBraces: Allman
+
+# if/while/for 单行不允许
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# 成员访问修饰符顶格
+AccessModifierOffset: -4
+
+# switch case 缩进
+IndentCaseLabels: true
+
+# 函数参数换行
+BinPackArguments: false
+BinPackParameters: false
+
+ColumnLimit: 100
+
+# 空格控制
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
