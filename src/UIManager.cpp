@@ -1,4 +1,4 @@
-#include "AppLogic.h"
+ï»¿#include "AppLogic.h"
 #include "UIManager.h"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -6,7 +6,7 @@
 #include <windows.h>
 
 UIManager::UIManager(AppLogic& logic) : m_initialized(false) {
-    // Æô¶¯×´Ì¬¼à¿ØÏß³Ì
+    // å¯åŠ¨çŠ¶æ€ç›‘æ§çº¿ç¨‹
     fileManager.StartMonitoring(logic);
     fileManager.UpdateMonitoredFile(L"");
 }
@@ -18,8 +18,8 @@ bool UIManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext*
     ImGui::CreateContext();
      
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.IniFilename = NULL;  // ²»±£´æ²¼¾ÖÎÄ¼ş
-    // Ìí¼ÓÖĞÎÄ×ÖÌå
+    io.IniFilename = NULL;  // ä¸ä¿å­˜å¸ƒå±€æ–‡ä»¶
+    // æ·»åŠ ä¸­æ–‡å­—ä½“
     AddChineseFont(io);
 
     ImGui::StyleColorsDark();
@@ -51,13 +51,13 @@ void UIManager::BeginFrame()
     ImGui::NewFrame();
 }
 
-// Ö÷äÖÈ¾º¯Êı
+// ä¸»æ¸²æŸ“å‡½æ•°
 bool UIManager::RenderUI(AppLogic& logic, HWND hwnd)
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
-    ImGui::Begin(u8"¹¤¾ß´°¿Ú", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin(u8"å·¥å…·çª—å£", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
 
     RenderDragWindow(hwnd);
 
@@ -73,7 +73,7 @@ bool UIManager::RenderUI(AppLogic& logic, HWND hwnd)
     return exit;
 }
 
-// ---------------- ´°¿ÚÍÏ×§ ----------------
+// ---------------- çª—å£æ‹–æ‹½ ----------------
 void UIManager::RenderDragWindow(HWND hwnd)
 {
     if(ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
@@ -93,7 +93,7 @@ void UIManager::RenderDragWindow(HWND hwnd)
     }
 }
 
-// ---------------- ¹¦ÄÜ°´Å¥ -----------------
+// ---------------- åŠŸèƒ½æŒ‰é’® -----------------
 void UIManager::RenderFunctionButtons(AppLogic& logic)
 {
     float availWidth = ImGui::GetContentRegionAvail().x;
@@ -101,7 +101,7 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     float spacing = 4.0f;
     float fourthWidth = (availWidth - 3 * spacing) / 4;
 
-    // ---------- ¼ì²éÑ¡ÖĞÎÄ¼ş ----------
+    // ---------- æ£€æŸ¥é€‰ä¸­æ–‡ä»¶ ----------
     const bool hasSelected = (m_selectedIndex >= 0 && m_selectedIndex < m_fileList.size());
     static std::string lastSelectedFile;
     static std::wstring wsSelectedFile;
@@ -110,29 +110,29 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
         lastSelectedFile = m_fileList[m_selectedIndex];
         wsSelectedFile = std::wstring(lastSelectedFile.begin(), lastSelectedFile.end());
 
-        // ¸üĞÂ FileManager ¼à¿ØÂ·¾¶
+        // æ›´æ–° FileManager ç›‘æ§è·¯å¾„
         fileManager.UpdateMonitoredFile(wsSelectedFile);
     }
 
-    // ---------- ×´Ì¬Çø ----------
-    ImGui::Text(u8"Ñ¹Ëõ°ü: %s | ÒÑ½âÑ¹: %s",
-        fileManager.IsExitZip() ? u8"´æÔÚ" : u8"²»´æÔÚ",
-        fileManager.IsExtracted() ? u8"ÊÇ" : u8"·ñ");
+    // ---------- çŠ¶æ€åŒº ----------
+    ImGui::Text(u8"å‹ç¼©åŒ…: %s | å·²è§£å‹: %s",
+        fileManager.IsExitZip() ? u8"å­˜åœ¨" : u8"ä¸å­˜åœ¨",
+        fileManager.IsExtracted() ? u8"æ˜¯" : u8"å¦");
     ImGui::Separator();
 
-    // ---------- ÎÄ¼şÏÂÔØÇø ----------
+    // ---------- æ–‡ä»¶ä¸‹è½½åŒº ----------
     float thirdWidthDownload = (availWidth - 2 * spacing) / 3;
-    if(ImGui::Button(u8"Ë¢ĞÂÎÄ¼şÁĞ±í", ImVec2(thirdWidthDownload, buttonHeight))){
+    if(ImGui::Button(u8"åˆ·æ–°æ–‡ä»¶åˆ—è¡¨", ImVec2(thirdWidthDownload, buttonHeight))){
         m_fileList = downloader.FetchFileList("http://07210d00.cn:8080/list");
         m_selectedIndex = m_fileList.empty() ? -1 : 0;
-        logic.AddLog(u8"[INFO] ÎÄ¼şÁĞ±íË¢ĞÂÍê³É", LogEntry::Level::Info);
+        logic.AddLog(u8"[INFO] æ–‡ä»¶åˆ—è¡¨åˆ·æ–°å®Œæˆ", LogEntry::Level::Info);
     }
 
     ImGui::SameLine();
-    const char* preview = hasSelected ? lastSelectedFile.c_str() : u8"Çë³¢ÊÔË¢ĞÂÎÄ¼şÁĞ±í";
+    const char* preview = hasSelected ? lastSelectedFile.c_str() : u8"è¯·å°è¯•åˆ·æ–°æ–‡ä»¶åˆ—è¡¨";
     ImGui::SetNextItemWidth(thirdWidthDownload);
     if(ImGui::BeginCombo("##fileCombo", preview)){
-        if(m_fileList.empty()) ImGui::Selectable(u8"ÎŞÎÄ¼ş", false);
+        if(m_fileList.empty()) ImGui::Selectable(u8"æ— æ–‡ä»¶", false);
         else{
             for(int i = 0; i < m_fileList.size(); i++){
                 bool isSelected = (i == m_selectedIndex);
@@ -144,19 +144,19 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     }
 
     ImGui::SameLine();
-    if(ImGui::Button(u8"ÏÂÔØÎÄ¼ş", ImVec2(thirdWidthDownload, buttonHeight)) && hasSelected){
+    if(ImGui::Button(u8"ä¸‹è½½æ–‡ä»¶", ImVec2(thirdWidthDownload, buttonHeight)) && hasSelected){
         std::string url = "http://07210d00.cn:8080/download?file=" + lastSelectedFile;
         std::string savePath = "./" + lastSelectedFile;
         downloader.StartDownload(url, savePath, logic);
-        logic.AddLog(u8"[INFO] ¿ªÊ¼ÏÂÔØ: " + lastSelectedFile, LogEntry::Level::Info);
+        logic.AddLog(u8"[INFO] å¼€å§‹ä¸‹è½½: " + lastSelectedFile, LogEntry::Level::Info);
     }
 
     ImGui::Spacing();
 
-    // ---------- ¹¦ÄÜ°´Å¥Çø£¨½âÑ¹ / ¿ì½İ·½Ê½ / ´ò¿ª / ¹Ø±Õ£© ----------
+    // ---------- åŠŸèƒ½æŒ‰é’®åŒºï¼ˆè§£å‹ / å¿«æ·æ–¹å¼ / æ‰“å¼€ / å…³é—­ï¼‰ ----------
     bool extractEnabled = hasSelected && fileManager.IsExitZip();
     if(!extractEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"½âÑ¹ÎÄ¼ş", ImVec2(fourthWidth, buttonHeight)) && hasSelected){
+    if(ImGui::Button(u8"è§£å‹æ–‡ä»¶", ImVec2(fourthWidth, buttonHeight)) && hasSelected){
         fileManager.ExtractZipAsync(wsSelectedFile, wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')), logic,
             [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
     }
@@ -165,7 +165,7 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
 
     bool shortcutEnabled = fileManager.IsExtracted();
     if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"´´½¨×ÀÃæ¿ì½İ·½Ê½", ImVec2(fourthWidth, buttonHeight))){
+    if(ImGui::Button(u8"åˆ›å»ºæ¡Œé¢å¿«æ·æ–¹å¼", ImVec2(fourthWidth, buttonHeight))){
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
         fileManager.CreateShortcut(exePath, wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')),
@@ -175,7 +175,7 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     ImGui::SameLine();
 
     if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"´ò¿ª³ÌĞò", ImVec2(fourthWidth, buttonHeight))){
+    if(ImGui::Button(u8"æ‰“å¼€ç¨‹åº", ImVec2(fourthWidth, buttonHeight))){
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
         fileManager.RunProgram(exePath,
@@ -185,106 +185,117 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     ImGui::SameLine();
 
     if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"¹Ø±Õ³ÌĞò", ImVec2(fourthWidth, buttonHeight))){
+    if(ImGui::Button(u8"å…³é—­ç¨‹åº", ImVec2(fourthWidth, buttonHeight))){
         fileManager.CloseProgram(
             [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
     }
     if(!shortcutEnabled) ImGui::EndDisabled();
 }
 
-// ---------------- ÏÂÔØ½ø¶È ----------------
+// ---------------- ä¸‹è½½è¿›åº¦ ----------------
 void UIManager::RenderDownloadProgress()
 {
-    ImGui::Text(u8"ÏÂÔØ½ø¶È£º");
+    ImGui::Text(u8"ä¸‹è½½è¿›åº¦ï¼š");
 
     float progress = downloader.GetProgress();
     bool finished = !downloader.IsDownloading() && downloader.IsFinished();
 
-    // ---------- ¶¯Ì¬½ø¶ÈÌõÑÕÉ« ----------
+    // ---------- åŠ¨æ€è¿›åº¦æ¡é¢œè‰² ----------
     ImVec4 barColor;
     if(finished){
-        barColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // Íê³ÉÂÌÉ«
+        barColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // å®Œæˆç»¿è‰²
     } else if(progress < 0.5f){
         float t = progress / 0.5f;
-        barColor = ImVec4(1.0f, t, 0.0f, 1.0f); // ºì->»Æ
+        barColor = ImVec4(1.0f, t, 0.0f, 1.0f); // çº¢->é»„
     } else{
         float t = (progress - 0.5f) / 0.5f;
-        barColor = ImVec4(1.0f - t, 1.0f, 0.0f, 1.0f); // »Æ->ÂÌ
+        barColor = ImVec4(1.0f - t, 1.0f, 0.0f, 1.0f); // é»„->ç»¿
     }
 
-    // ---------- »æÖÆ½ø¶ÈÌõ ----------
+    // ---------- ç»˜åˆ¶è¿›åº¦æ¡ ----------
     ImVec2 barSize(-1.0f, 25.0f);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, barColor);
-    ImGui::ProgressBar(progress, barSize, ""); // ¿ÕÎÄ×Ö
+    ImGui::ProgressBar(progress, barSize, ""); // ç©ºæ–‡å­—
     ImGui::PopStyleColor();
 
-    // ---------- ÎÄ×Ö ----------
+    // ---------- æ–‡å­— ----------
     char overlay[32];
     if(finished){
-        strcpy_s(overlay, u8"Íê³É!");
+        strcpy_s(overlay, u8"å®Œæˆ!");
     } else{
         int percent = static_cast<int>(progress * 100);
         sprintf_s(overlay, "%d%%", percent);
     }
 
-    // ---------- ¾ÓÖĞÎÄ×Ö ----------
+    // ---------- å±…ä¸­æ–‡å­— ----------
     ImVec2 pos = ImGui::GetItemRectMin();
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 textSize = ImGui::CalcTextSize(overlay);
     ImVec2 textPos = ImVec2(pos.x + (size.x - textSize.x) * 0.5f,
         pos.y + (size.y - textSize.y) * 0.5f);
 
-    // ---------- ÎÄ×ÖÑÕÉ«£º½ø¶È <50% °×É«£¬>=50% ºÚÉ« ----------
+    // ---------- æ–‡å­—é¢œè‰²ï¼šè¿›åº¦ <50% ç™½è‰²ï¼Œ>=50% é»‘è‰² ----------
     ImVec4 textColor = (progress < 0.5f) ? ImVec4(1, 1, 1, 1) : ImVec4(0, 0, 0, 1);
     ImU32 col = ImGui::ColorConvertFloat4ToU32(textColor);
     ImGui::GetWindowDrawList()->AddText(textPos, col, overlay);
 
-    // ---------- ×´Ì¬ĞÅÏ¢ ----------
-    ImGui::Text(u8"×´Ì¬: %s", downloader.GetStatus().c_str());
+    // ---------- çŠ¶æ€ä¿¡æ¯ ----------
+    ImGui::Text(u8"çŠ¶æ€: %s", downloader.GetStatus().c_str());
     ImGui::Separator();
 }
 
-
-// ---------------- ÈÕÖ¾Êä³ö ----------------
+// ---------------- æ—¥å¿—è¾“å‡º ----------------
 void UIManager::RenderLogOutput(AppLogic& logic)
 {
-    ImGui::Text(u8"ÈÕÖ¾Êä³ö£º");
+    ImGui::Text(u8"æ—¥å¿—è¾“å‡ºï¼š");
+
+    // å­çª—å£åŒºåŸŸï¼Œæ°´å¹³æ»šåŠ¨æ¡ä¿ç•™ï¼Œå‚ç›´æ»šåŠ¨æ¡è‡ªåŠ¨
     ImGui::BeginChild("LogRegion", ImVec2(0, 160), true, ImGuiWindowFlags_HorizontalScrollbar);
-    for(const auto& entry : logic.GetLogs()){
-        ImVec4 color = ImVec4(1, 1, 1, 1);
+
+    // åˆ¤æ–­ç”¨æˆ·æ˜¯å¦åœ¨æ»šåŠ¨åº•éƒ¨
+    bool scrollToBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
+
+    // ä½¿ç”¨å›è°ƒç›´æ¥æ¸²æŸ“æ—¥å¿—
+    logic.ForEachLog([&](const LogEntry& entry){
+        ImVec4 color;
         switch(entry.level){
-        case LogEntry::Level::Info:  color = ImVec4(1, 1, 1, 1); break;
-        case LogEntry::Level::Warn:  color = ImVec4(1, 1, 0, 1); break;
-        case LogEntry::Level::Error: color = ImVec4(1, 0, 0, 1); break;
+        case LogEntry::Level::Info:  color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); break;
+        case LogEntry::Level::Warn:  color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f); break;
+        case LogEntry::Level::Error: color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); break;
+        default: color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); break;
         }
+
         ImGui::PushStyleColor(ImGuiCol_Text, color);
-        ImGui::TextUnformatted(entry.text.c_str());
+        ImGui::TextWrapped("%s", entry.text.c_str()); // è‡ªåŠ¨æ¢è¡Œ
         ImGui::PopStyleColor();
-    }
-    if(ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+        });
+
+    // å¦‚æœå½“å‰æ»šåŠ¨åœ¨åº•éƒ¨ï¼Œå°±ç»§ç»­æ»šåŠ¨åˆ°åº•éƒ¨
+    if(scrollToBottom)
         ImGui::SetScrollHereY(1.0f);
+
     ImGui::EndChild();
     ImGui::Spacing();
 }
 
-// ---------------- ÍË³ö / ×îĞ¡»¯ ----------------
+// ---------------- é€€å‡º / æœ€å°åŒ– ----------------
 bool UIManager::RenderExitButton(HWND hwnd)
 {
     bool exit = false;
 
     float availWidth = ImGui::GetContentRegionAvail().x;
     float buttonHeight = 30.0f;
-    float buttonWidth = (availWidth - 5.0f) / 2; // Á½¸ö°´Å¥Æ½·ÖÒ»ĞĞ£¬ÖĞ¼äÁô 5px
+    float buttonWidth = (availWidth - 5.0f) / 2; // ä¸¤ä¸ªæŒ‰é’®å¹³åˆ†ä¸€è¡Œï¼Œä¸­é—´ç•™ 5px
 
-    // ÍË³ö°´Å¥
-    if(ImGui::Button(u8"ÍË³ö", ImVec2(buttonWidth, buttonHeight))){
+    // é€€å‡ºæŒ‰é’®
+    if(ImGui::Button(u8"é€€å‡º", ImVec2(buttonWidth, buttonHeight))){
         exit = true;
     }
 
     ImGui::SameLine();
 
-    // ×îĞ¡»¯°´Å¥
-    if(ImGui::Button(u8"×îĞ¡»¯", ImVec2(buttonWidth, buttonHeight))){
+    // æœ€å°åŒ–æŒ‰é’®
+    if(ImGui::Button(u8"æœ€å°åŒ–", ImVec2(buttonWidth, buttonHeight))){
         ShowWindow(hwnd, SW_MINIMIZE);
     }
 
@@ -298,16 +309,16 @@ void UIManager::AddChineseFont(ImGuiIO& io)
     if(_wdupenv_s(&windir, &len, L"WINDIR") != 0 || !windir)
         return;
 
-    // Æ´½Ó×ÖÌåÂ·¾¶
+    // æ‹¼æ¥å­—ä½“è·¯å¾„
     std::wstring fontPath = std::wstring(windir) + L"\\Fonts\\msyh.ttc";
     free(windir);
 
-    // ×ª UTF-8
+    // è½¬ UTF-8
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, fontPath.c_str(), (int)fontPath.size(), NULL, 0, NULL, NULL);
     std::string fontPathUtf8(size_needed, 0);
     WideCharToMultiByte(CP_UTF8, 0, fontPath.c_str(), (int)fontPath.size(), fontPathUtf8.data(), size_needed, NULL, NULL);
 
-    // ¼ÓÔØ×ÖÌå
+    // åŠ è½½å­—ä½“
     io.Fonts->AddFontFromFileTTF(fontPathUtf8.c_str(), 16.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
 }
 

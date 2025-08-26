@@ -1,4 +1,4 @@
-#include "AppLogic.h"
+ï»¿#include "AppLogic.h"
 #include <chrono>
 #include <iomanip>
 #include <sstream>
@@ -7,13 +7,13 @@
 
 AppLogic::AppLogic() : m_state(State::Stopped)
 {
-    // »ñÈ¡ºËĞÄÊı
+    // è·å–æ ¸å¿ƒæ•°
     size_t threadCount = CpuInfo::PhysicalCores();
-    // ´´½¨Ïß³Ì³Ø
+    // åˆ›å»ºçº¿ç¨‹æ± 
     m_pool = std::make_shared<BS::thread_pool<>>(threadCount);
-    // ¼ÇÂ¼ÈÕÖ¾
+    // è®°å½•æ—¥å¿—
     std::ostringstream oss;
-    oss << u8"³ÌĞòÆô¶¯³É¹¦£¬Ïß³Ì³ØÏß³ÌÊı: " << threadCount;
+    oss << u8"ç¨‹åºå¯åŠ¨æˆåŠŸï¼Œçº¿ç¨‹æ± çº¿ç¨‹æ•°: " << threadCount;
     AddLog(oss.str(), LogEntry::Level::Info);
 }
 
@@ -30,11 +30,19 @@ void AppLogic::AddLog(const std::string& message, LogEntry::Level level)
     ss << "[" << std::put_time(&tm, "%H:%M:%S") << "] " << message;
 
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_logs.push_back({ level, ss.str() });
+    // å†™å…¥å½“å‰ä½ç½®ï¼Œè¦†ç›–æœ€æ—§æ—¥å¿—
+    m_logs[m_nextIndex] = { level, ss.str() };
+    m_nextIndex = (m_nextIndex + 1) % MAX_LOGS;
+
+    if(m_count < MAX_LOGS) m_count++;
 }
 
-std::vector<LogEntry> AppLogic::GetLogs() const
+// éå†æ—¥å¿—ï¼ŒæŒ‰æ—¶é—´é¡ºåºï¼Œä»æœ€æ—§åˆ°æœ€æ–°
+void AppLogic::ForEachLog(const std::function<void(const LogEntry&)>& cb) const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    return m_logs;
+    size_t start = (m_nextIndex + MAX_LOGS - m_count) % MAX_LOGS;
+    for(size_t i = 0; i < m_count; i++){
+        cb(m_logs[(start + i) % MAX_LOGS]);
+    }
 }
