@@ -1,21 +1,20 @@
-#pragma once
+ï»¿#pragma once
 #include "AppLogic.h"
-#include "WindowManager.h"
 #include "UIManager.h"
+#include "WindowManager.h"
 #include <memory>
 
 class Application
 {
 public:
-    Application()
-        : uiManager_(appLogic_) {
-    }   // uiManager_ ¹¹Ôì±ØĞëÔÚ appLogic_ ºó
+    Application();
     ~Application() = default;
 
     int Run(HINSTANCE hInstance);
 
 private:
-    WindowManager windowManager_;
+    // æˆå‘˜å¯¹è±¡æŒ‰ä¾èµ–é¡ºåºå£°æ˜
     AppLogic appLogic_;
     UIManager uiManager_;
+    std::unique_ptr<WindowManager> windowManager_;
 };

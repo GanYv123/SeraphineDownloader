@@ -1,7 +1,7 @@
-#pragma once
+Ôªø#pragma once
 
-#include <thread>
 #include <cstddef>
+#include <thread>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -12,29 +12,35 @@
 class CpuInfo
 {
 public:
-    // ªÒ»°¬ﬂº≠œﬂ≥Ã ˝£®std::thread::hardware_concurrency µƒ∞¸◊∞£©
-    static size_t LogicalThreads() {
+    // Ëé∑ÂèñÈÄªËæëÁ∫øÁ®ãÊï∞Ôºàstd::thread::hardware_concurrency ÁöÑÂåÖË£ÖÔºâ
+    static size_t LogicalThreads()
+    {
         size_t n = std::thread::hardware_concurrency();
         return n > 0 ? n : 1;
     }
 
-    // ªÒ»°ŒÔ¿Ì∫À–ƒ ˝
-    static size_t PhysicalCores() {
+    // Ëé∑ÂèñÁâ©ÁêÜÊ†∏ÂøÉÊï∞
+    static size_t PhysicalCores()
+    {
 #if defined(_WIN32) || defined(_WIN64)
         DWORD len = 0;
         GetLogicalProcessorInformation(nullptr, &len);
-        if(len == 0) return LogicalThreads();
+        if (len == 0)
+            return LogicalThreads();
 
         DWORD count = len / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-        SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = new SYSTEM_LOGICAL_PROCESSOR_INFORMATION[count];
-        if(!GetLogicalProcessorInformation(buffer, &len)){
+        SYSTEM_LOGICAL_PROCESSOR_INFORMATION *buffer =
+            new SYSTEM_LOGICAL_PROCESSOR_INFORMATION[count];
+        if (!GetLogicalProcessorInformation(buffer, &len))
+        {
             delete[] buffer;
             return LogicalThreads();
         }
 
         size_t cores = 0;
-        for(DWORD i = 0; i < count; ++i){
-            if(buffer[i].Relationship == RelationProcessorCore)
+        for (DWORD i = 0; i < count; ++i)
+        {
+            if (buffer[i].Relationship == RelationProcessorCore)
                 ++cores;
         }
 
@@ -43,15 +49,15 @@ public:
 
 #elif defined(__linux__)
         long n = sysconf(_SC_NPROCESSORS_ONLN);
-        return n > 0 ? (size_t)n : LogicalThreads();
+        return n > 0 ? (size_t) n : LogicalThreads();
 #elif defined(__APPLE__) && defined(__MACH__)
         int nm[2];
         size_t len = 4;
         uint32_t count;
         nm[0] = CTL_HW;
         nm[1] = HW_PHYSICALCPU;
-        if(sysctl(nm, 2, &count, &len, nullptr, 0) == 0)
-            return (size_t)count;
+        if (sysctl(nm, 2, &count, &len, nullptr, 0) == 0)
+            return (size_t) count;
         return LogicalThreads();
 #else
         return LogicalThreads(); // fallback

@@ -4,14 +4,24 @@
 
 struct LogEntry
 {
-    enum class Level { Info, Warn, Error } level;
+    enum class Level
+    {
+        Info,
+        Warn,
+        Error
+    } level;
     std::string text;
 };
 
 class AppLogic
 {
 public:
-    enum class State { Stopped, Running, Paused };
+    enum class State
+    {
+        Stopped,
+        Running,
+        Paused
+    };
 
     AppLogic();
     ~AppLogic();
@@ -24,8 +34,9 @@ public:
 
     // 对外暴露任务提交接口
     template <typename F, typename... Args>
-    auto SubmitTask(F&& f, Args&&... args)
+    auto SubmitTask(F &&f, Args &&...args)
         -> std::future<typename std::invoke_result_t<F, Args...>>;
+
 private:
     State m_state;
     mutable std::mutex m_mutex;
@@ -38,8 +49,8 @@ private:
 };
 
 template <typename F, typename... Args>
-auto AppLogic::SubmitTask(F&& f, Args&&... args)
--> std::future<typename std::invoke_result_t<F, Args...>>
+auto AppLogic::SubmitTask(F &&f, Args &&...args)
+    -> std::future<typename std::invoke_result_t<F, Args...>>
 {
     return m_pool->submit_task(std::forward<F>(f), std::forward<Args>(args)...);
 }

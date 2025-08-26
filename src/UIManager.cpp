@@ -1,31 +1,37 @@
-﻿#include "AppLogic.h"
-#include "UIManager.h"
+﻿#include "UIManager.h"
+#include "AppLogic.h"
 #include "imgui.h"
-#include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 #include <windows.h>
 
-UIManager::UIManager(AppLogic& logic) : m_initialized(false) {
+UIManager::UIManager(AppLogic &logic) : m_initialized(false)
+{
+
     // 启动状态监控线程
     fileManager.StartMonitoring(logic);
     fileManager.UpdateMonitoredFile(L"");
 }
 UIManager::~UIManager() { Cleanup(); }
 
-bool UIManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context)
+bool UIManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-     
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.IniFilename = NULL;  // 不保存布局文件
+
+    ImGuiIO &io = ImGui::GetIO();
+    (void) io;
+    io.IniFilename = NULL; // 不保存布局文件
+
     // 添加中文字体
     AddChineseFont(io);
 
     ImGui::StyleColorsDark();
 
-    if(!ImGui_ImplWin32_Init(hwnd)) return false;
-    if(!ImGui_ImplDX11_Init(device, context)){
+    if (!ImGui_ImplWin32_Init(hwnd))
+        return false;
+    if (!ImGui_ImplDX11_Init(device, context))
+    {
         ImGui_ImplWin32_Shutdown();
         return false;
     }
@@ -36,7 +42,8 @@ bool UIManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext*
 
 void UIManager::Cleanup()
 {
-    if(m_initialized){
+    if (m_initialized)
+    {
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
@@ -52,12 +59,14 @@ void UIManager::BeginFrame()
 }
 
 // 主渲染函数
-bool UIManager::RenderUI(AppLogic& logic, HWND hwnd)
+bool UIManager::RenderUI(AppLogic &logic, HWND hwnd)
+
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
 
-    ImGui::Begin(u8"工具窗口", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin(
+        u8"工具窗口", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
 
     RenderDragWindow(hwnd);
 
@@ -76,11 +85,13 @@ bool UIManager::RenderUI(AppLogic& logic, HWND hwnd)
 // ---------------- 窗口拖拽 ----------------
 void UIManager::RenderDragWindow(HWND hwnd)
 {
-    if(ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
-        ImGui::IsMouseDragging(ImGuiMouseButton_Left)){
+    if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
+        ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+    {
         POINT pt;
         GetCursorPos(&pt);
-        if(!dragging) drag_offset = pt;
+        if (!dragging)
+            drag_offset = pt;
         int dx = pt.x - drag_offset.x;
         int dy = pt.y - drag_offset.y;
         drag_offset = pt;
@@ -88,13 +99,16 @@ void UIManager::RenderDragWindow(HWND hwnd)
         GetWindowRect(hwnd, &rect);
         SetWindowPos(hwnd, NULL, rect.left + dx, rect.top + dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         dragging = true;
-    } else{
+    }
+    else
+    {
         dragging = false;
     }
 }
 
 // ---------------- 功能按钮 -----------------
-void UIManager::RenderFunctionButtons(AppLogic& logic)
+void UIManager::RenderFunctionButtons(AppLogic &logic)
+
 {
     float availWidth = ImGui::GetContentRegionAvail().x;
     float buttonHeight = 24.0f;
@@ -106,7 +120,8 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
     static std::string lastSelectedFile;
     static std::wstring wsSelectedFile;
 
-    if(hasSelected && m_fileList[m_selectedIndex] != lastSelectedFile){
+    if (hasSelected && m_fileList[m_selectedIndex] != lastSelectedFile)
+    {
         lastSelectedFile = m_fileList[m_selectedIndex];
         wsSelectedFile = std::wstring(lastSelectedFile.begin(), lastSelectedFile.end());
 
@@ -116,35 +131,43 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
 
     // ---------- 状态区 ----------
     ImGui::Text(u8"压缩包: %s | 已解压: %s",
-        fileManager.IsExitZip() ? u8"存在" : u8"不存在",
-        fileManager.IsExtracted() ? u8"是" : u8"否");
+                fileManager.IsExitZip() ? u8"存在" : u8"不存在",
+                fileManager.IsExtracted() ? u8"是" : u8"否");
     ImGui::Separator();
 
     // ---------- 文件下载区 ----------
     float thirdWidthDownload = (availWidth - 2 * spacing) / 3;
-    if(ImGui::Button(u8"刷新文件列表", ImVec2(thirdWidthDownload, buttonHeight))){
+    if (ImGui::Button(u8"刷新文件列表", ImVec2(thirdWidthDownload, buttonHeight)))
+    {
         m_fileList = downloader.FetchFileList("http://07210d00.cn:8080/list");
         m_selectedIndex = m_fileList.empty() ? -1 : 0;
         logic.AddLog(u8"[INFO] 文件列表刷新完成", LogEntry::Level::Info);
     }
 
     ImGui::SameLine();
-    const char* preview = hasSelected ? lastSelectedFile.c_str() : u8"请尝试刷新文件列表";
+    const char *preview = hasSelected ? lastSelectedFile.c_str() : u8"请尝试刷新文件列表";
     ImGui::SetNextItemWidth(thirdWidthDownload);
-    if(ImGui::BeginCombo("##fileCombo", preview)){
-        if(m_fileList.empty()) ImGui::Selectable(u8"无文件", false);
-        else{
-            for(int i = 0; i < m_fileList.size(); i++){
+    if (ImGui::BeginCombo("##fileCombo", preview))
+    {
+        if (m_fileList.empty())
+            ImGui::Selectable(u8"无文件", false);
+        else
+        {
+            for (int i = 0; i < m_fileList.size(); i++)
+            {
                 bool isSelected = (i == m_selectedIndex);
-                if(ImGui::Selectable(m_fileList[i].c_str(), isSelected)) m_selectedIndex = i;
-                if(isSelected) ImGui::SetItemDefaultFocus();
+                if (ImGui::Selectable(m_fileList[i].c_str(), isSelected))
+                    m_selectedIndex = i;
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
             }
         }
         ImGui::EndCombo();
     }
 
     ImGui::SameLine();
-    if(ImGui::Button(u8"下载文件", ImVec2(thirdWidthDownload, buttonHeight)) && hasSelected){
+    if (ImGui::Button(u8"下载文件", ImVec2(thirdWidthDownload, buttonHeight)) && hasSelected)
+    {
         std::string url = "http://07210d00.cn:8080/download?file=" + lastSelectedFile;
         std::string savePath = "./" + lastSelectedFile;
         downloader.StartDownload(url, savePath, logic);
@@ -155,41 +178,66 @@ void UIManager::RenderFunctionButtons(AppLogic& logic)
 
     // ---------- 功能按钮区（解压 / 快捷方式 / 打开 / 关闭） ----------
     bool extractEnabled = hasSelected && fileManager.IsExitZip();
-    if(!extractEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"解压文件", ImVec2(fourthWidth, buttonHeight)) && hasSelected){
-        fileManager.ExtractZipAsync(wsSelectedFile, wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')), logic,
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+
+    if (!extractEnabled)
+        ImGui::BeginDisabled();
+    if (ImGui::Button(u8"解压文件", ImVec2(fourthWidth, buttonHeight)) && hasSelected)
+    {
+        fileManager.ExtractZipAsync(wsSelectedFile,
+                                    wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')),
+                                    logic,
+                                    [&](const std::string &msg, int level)
+                                    { logic.AddLog(msg, (LogEntry::Level) level); });
+
     }
-    if(!extractEnabled) ImGui::EndDisabled();
+    if (!extractEnabled)
+        ImGui::EndDisabled();
     ImGui::SameLine();
 
     bool shortcutEnabled = fileManager.IsExtracted();
-    if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"创建桌面快捷方式", ImVec2(fourthWidth, buttonHeight))){
+
+    if (!shortcutEnabled)
+        ImGui::BeginDisabled();
+    if (ImGui::Button(u8"创建桌面快捷方式", ImVec2(fourthWidth, buttonHeight)))
+    {
+
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
-        fileManager.CreateShortcut(exePath, wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')),
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+        fileManager.CreateShortcut(exePath,
+                                   wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.')),
+                                   [&](const std::string &msg, int level)
+                                   { logic.AddLog(msg, (LogEntry::Level) level); });
     }
-    if(!shortcutEnabled) ImGui::EndDisabled();
+    if (!shortcutEnabled)
+        ImGui::EndDisabled();
     ImGui::SameLine();
 
-    if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"打开程序", ImVec2(fourthWidth, buttonHeight))){
+
+    if (!shortcutEnabled)
+        ImGui::BeginDisabled();
+    if (ImGui::Button(u8"打开程序", ImVec2(fourthWidth, buttonHeight)))
+    {
+
         std::wstring exeName = wsSelectedFile.substr(0, wsSelectedFile.find_last_of(L'.'));
         std::wstring exePath = exeName + L"\\" + exeName;
         fileManager.RunProgram(exePath,
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+                               [&](const std::string &msg, int level)
+                               { logic.AddLog(msg, (LogEntry::Level) level); });
     }
-    if(!shortcutEnabled) ImGui::EndDisabled();
+    if (!shortcutEnabled)
+        ImGui::EndDisabled();
     ImGui::SameLine();
 
-    if(!shortcutEnabled) ImGui::BeginDisabled();
-    if(ImGui::Button(u8"关闭程序", ImVec2(fourthWidth, buttonHeight))){
-        fileManager.CloseProgram(
-            [&](const std::string& msg, int level){ logic.AddLog(msg, (LogEntry::Level)level); });
+    if (!shortcutEnabled)
+        ImGui::BeginDisabled();
+    if (ImGui::Button(u8"关闭程序", ImVec2(fourthWidth, buttonHeight)))
+    {
+        fileManager.CloseProgram([&](const std::string &msg, int level)
+                                 { logic.AddLog(msg, (LogEntry::Level) level); });
+
     }
-    if(!shortcutEnabled) ImGui::EndDisabled();
+    if (!shortcutEnabled)
+        ImGui::EndDisabled();
 }
 
 // ---------------- 下载进度 ----------------
@@ -202,12 +250,18 @@ void UIManager::RenderDownloadProgress()
 
     // ---------- 动态进度条颜色 ----------
     ImVec4 barColor;
-    if(finished){
+
+    if (finished)
+    {
         barColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f); // 完成绿色
-    } else if(progress < 0.5f){
+    }
+    else if (progress < 0.5f)
+    {
         float t = progress / 0.5f;
         barColor = ImVec4(1.0f, t, 0.0f, 1.0f); // 红->黄
-    } else{
+    }
+    else
+    {
         float t = (progress - 0.5f) / 0.5f;
         barColor = ImVec4(1.0f - t, 1.0f, 0.0f, 1.0f); // 黄->绿
     }
@@ -220,9 +274,12 @@ void UIManager::RenderDownloadProgress()
 
     // ---------- 文字 ----------
     char overlay[32];
-    if(finished){
+    if (finished)
+    {
         strcpy_s(overlay, u8"完成!");
-    } else{
+    }
+    else
+    {
         int percent = static_cast<int>(progress * 100);
         sprintf_s(overlay, "%d%%", percent);
     }
@@ -231,8 +288,8 @@ void UIManager::RenderDownloadProgress()
     ImVec2 pos = ImGui::GetItemRectMin();
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 textSize = ImGui::CalcTextSize(overlay);
-    ImVec2 textPos = ImVec2(pos.x + (size.x - textSize.x) * 0.5f,
-        pos.y + (size.y - textSize.y) * 0.5f);
+    ImVec2 textPos =
+        ImVec2(pos.x + (size.x - textSize.x) * 0.5f, pos.y + (size.y - textSize.y) * 0.5f);
 
     // ---------- 文字颜色：进度 <50% 白色，>=50% 黑色 ----------
     ImVec4 textColor = (progress < 0.5f) ? ImVec4(1, 1, 1, 1) : ImVec4(0, 0, 0, 1);
@@ -245,33 +302,31 @@ void UIManager::RenderDownloadProgress()
 }
 
 // ---------------- 日志输出 ----------------
-void UIManager::RenderLogOutput(AppLogic& logic)
+void UIManager::RenderLogOutput(AppLogic &logic)
 {
     ImGui::Text(u8"日志输出：");
-
-    // 子窗口区域，水平滚动条保留，垂直滚动条自动
     ImGui::BeginChild("LogRegion", ImVec2(0, 160), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-    // 判断用户是否在滚动底部
-    bool scrollToBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
-
-    // 使用回调直接渲染日志
-    logic.ForEachLog([&](const LogEntry& entry){
-        ImVec4 color;
-        switch(entry.level){
-        case LogEntry::Level::Info:  color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); break;
-        case LogEntry::Level::Warn:  color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f); break;
-        case LogEntry::Level::Error: color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); break;
-        default: color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); break;
+    for (const auto &entry : logic.GetLogs())
+    {
+        ImVec4 color = ImVec4(1, 1, 1, 1);
+        switch (entry.level)
+        {
+            case LogEntry::Level::Info:
+                color = ImVec4(1, 1, 1, 1);
+                break;
+            case LogEntry::Level::Warn:
+                color = ImVec4(1, 1, 0, 1);
+                break;
+            case LogEntry::Level::Error:
+                color = ImVec4(1, 0, 0, 1);
+                break;
         }
 
         ImGui::PushStyleColor(ImGuiCol_Text, color);
         ImGui::TextWrapped("%s", entry.text.c_str()); // 自动换行
         ImGui::PopStyleColor();
-        });
-
-    // 如果当前滚动在底部，就继续滚动到底部
-    if(scrollToBottom)
+    }
+    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
         ImGui::SetScrollHereY(1.0f);
 
     ImGui::EndChild();
@@ -288,25 +343,27 @@ bool UIManager::RenderExitButton(HWND hwnd)
     float buttonWidth = (availWidth - 5.0f) / 2; // 两个按钮平分一行，中间留 5px
 
     // 退出按钮
-    if(ImGui::Button(u8"退出", ImVec2(buttonWidth, buttonHeight))){
+    if (ImGui::Button(u8"退出", ImVec2(buttonWidth, buttonHeight)))
+    {
         exit = true;
     }
 
     ImGui::SameLine();
 
     // 最小化按钮
-    if(ImGui::Button(u8"最小化", ImVec2(buttonWidth, buttonHeight))){
+    if (ImGui::Button(u8"最小化", ImVec2(buttonWidth, buttonHeight)))
+    {
         ShowWindow(hwnd, SW_MINIMIZE);
     }
 
     return exit;
 }
 
-void UIManager::AddChineseFont(ImGuiIO& io)
+void UIManager::AddChineseFont(ImGuiIO &io)
 {
-    wchar_t* windir = nullptr;
+    wchar_t *windir = nullptr;
     size_t len = 0;
-    if(_wdupenv_s(&windir, &len, L"WINDIR") != 0 || !windir)
+    if (_wdupenv_s(&windir, &len, L"WINDIR") != 0 || !windir)
         return;
 
     // 拼接字体路径
@@ -314,17 +371,21 @@ void UIManager::AddChineseFont(ImGuiIO& io)
     free(windir);
 
     // 转 UTF-8
-    int size_needed = WideCharToMultiByte(CP_UTF8, 0, fontPath.c_str(), (int)fontPath.size(), NULL, 0, NULL, NULL);
+    int size_needed = WideCharToMultiByte(
+        CP_UTF8, 0, fontPath.c_str(), (int) fontPath.size(), NULL, 0, NULL, NULL);
     std::string fontPathUtf8(size_needed, 0);
-    WideCharToMultiByte(CP_UTF8, 0, fontPath.c_str(), (int)fontPath.size(), fontPathUtf8.data(), size_needed, NULL, NULL);
+    WideCharToMultiByte(CP_UTF8,
+                        0,
+                        fontPath.c_str(),
+                        (int) fontPath.size(),
+                        fontPathUtf8.data(),
+                        size_needed,
+                        NULL,
+                        NULL);
 
     // 加载字体
-    io.Fonts->AddFontFromFileTTF(fontPathUtf8.c_str(), 16.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+    io.Fonts->AddFontFromFileTTF(
+        fontPathUtf8.c_str(), 16.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
 }
 
-void UIManager::EndFrame()
-{
-    ImGui::Render();
-}
-
-
+void UIManager::EndFrame() { ImGui::Render(); }
