@@ -1,5 +1,5 @@
-#pragma once
-#include "Downloader.h" // ±ØĞëÓĞÍêÕûÀà¶¨Òå
+ï»¿#pragma once
+#include "Downloader.h" // å¿…é¡»æœ‰å®Œæ•´ç±»å®šä¹‰
 #include "FileManager.h"
 #include <d3d11.h>
 #include <windows.h>
@@ -21,16 +21,16 @@ public:
 
 private:
     bool m_initialized;
-    // ×ÓÄ£¿éäÖÈ¾º¯Êı
+    // å­æ¨¡å—æ¸²æŸ“å‡½æ•°
     void RenderDragWindow(HWND hwnd);
     void RenderFunctionButtons(AppLogic &logic);
     void RenderDownloadProgress();
     void RenderLogOutput(AppLogic &logic);
     bool RenderExitButton(HWND hwnd);
-    // ¼ÓÔØÖĞÎÄ×ÖÌå
+    // åŠ è½½ä¸­æ–‡å­—ä½“
     void AddChineseFont(ImGuiIO &io);
 
-    // ³ÉÔ±±äÁ¿£¨Ìæ´ú¾²Ì¬¾Ö²¿±äÁ¿£©
+    // æˆå‘˜å˜é‡ï¼ˆæ›¿ä»£é™æ€å±€éƒ¨å˜é‡ï¼‰
     Downloader downloader;
     FileManager fileManager;
     bool dragging = false;

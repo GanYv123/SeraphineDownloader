@@ -1,22 +1,22 @@
-#include "Application.h"
+ï»¿#include "Application.h"
 #include <thread> // Sleep
 #include <windows.h>
 
 Application::Application()
     : appLogic_(), uiManager_(appLogic_), windowManager_(std::make_unique<WindowManager>())
 {
-    // ¹¹Ôìº¯ÊıÖĞ°´Ë³Ğò³õÊ¼»¯³ÉÔ±
+    // æ„é€ å‡½æ•°ä¸­æŒ‰é¡ºåºåˆå§‹åŒ–æˆå‘˜
 }
 
 int Application::Run(HINSTANCE hInstance)
 {
-    // ³õÊ¼»¯´°¿Ú
+    // åˆå§‹åŒ–çª—å£
     if (!windowManager_->Initialize(hInstance, 600, 400))
     {
         return 1;
     }
 
-    // ³õÊ¼»¯ UI
+    // åˆå§‹åŒ– UI
     if (!uiManager_.Initialize(windowManager_->GetHwnd(),
                                windowManager_->GetDevice(),
                                windowManager_->GetDeviceContext()))
@@ -24,7 +24,7 @@ int Application::Run(HINSTANCE hInstance)
         return 1;
     }
 
-    // ÏûÏ¢Ñ­»·
+    // æ¶ˆæ¯å¾ªç¯
     MSG msg{};
     bool isDone = false;
 
@@ -48,6 +48,6 @@ int Application::Run(HINSTANCE hInstance)
         }
     }
 
-    // ²»ÓÃÏÔÊ½ Cleanup£¬³ÉÔ±¶ÔÏóÎö¹¹×Ô¶¯ÊÍ·Å
+    // ä¸ç”¨æ˜¾å¼ Cleanupï¼Œæˆå‘˜å¯¹è±¡ææ„è‡ªåŠ¨é‡Šæ”¾
     return 0;
 }

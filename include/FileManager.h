@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "AppLogic.h"
 #include <atomic>
 #include <functional>
@@ -15,34 +15,34 @@ public:
     FileManager();
     ~FileManager();
 
-    // Òì²½½âÑ¹
+    // å¼‚æ­¥è§£å‹
     bool ExtractZipAsync(const std::wstring &zipPath,
                          const std::wstring &destFolder,
                          AppLogic &logic,
                          LogCallback callback = nullptr);
 
-    // ´´½¨×ÀÃæ¿ì½İ·½Ê½
+    // åˆ›å»ºæ¡Œé¢å¿«æ·æ–¹å¼
     bool CreateShortcut(const std::wstring &folderPath,
                         const std::wstring &shortcutName,
                         LogCallback callback = nullptr);
 
-    // ´ò¿ª/¹Ø±Õ³ÌĞò
+    // æ‰“å¼€/å…³é—­ç¨‹åº
     bool RunProgram(const std::wstring &folderPath, LogCallback callback = nullptr);
     bool CloseProgram(LogCallback callback = nullptr);
 
-    // ×´Ì¬·ÃÎÊÆ÷
+    // çŠ¶æ€è®¿é—®å™¨
     bool IsExtracting() const { return m_extracting.load(); }
     bool IsExtracted() const { return m_extracted.load(); }
     bool IsExitZip() const { return m_isExistZip.load(); }
 
-    // Æô¶¯/Í£Ö¹¼à¿Ø
+    // å¯åŠ¨/åœæ­¢ç›‘æ§
     void StartMonitoring(AppLogic &logic);
     void StopMonitoring();
-    // ¸üĞÂ¼à¿ØÎÄ¼ş
+    // æ›´æ–°ç›‘æ§æ–‡ä»¶
     void UpdateMonitoredFile(const std::wstring &zipPath);
 
 private:
-    // Í¬²½½âÑ¹
+    // åŒæ­¥è§£å‹
     void ExtractZip(const std::wstring &zipPath,
                     const std::wstring &destFolder,
                     LogCallback callback = nullptr);
@@ -56,7 +56,7 @@ private:
     HANDLE m_processHandle = nullptr;
     DWORD m_processId = 0;
     std::mutex m_monitorMutex;
-    // ¼à¿ØÏß³Ì
+    // ç›‘æ§çº¿ç¨‹
     std::atomic<bool> m_stopMonitor{false};
     std::thread m_monitorThread;
     std::wstring m_monitoredZip;

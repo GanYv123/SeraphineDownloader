@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cstddef>
 #include <thread>
@@ -12,14 +12,14 @@
 class CpuInfo
 {
 public:
-    // »ñÈ¡Âß¼­Ïß³ÌÊı£¨std::thread::hardware_concurrency µÄ°ü×°£©
+    // è·å–é€»è¾‘çº¿ç¨‹æ•°ï¼ˆstd::thread::hardware_concurrency çš„åŒ…è£…ï¼‰
     static size_t LogicalThreads()
     {
         size_t n = std::thread::hardware_concurrency();
         return n > 0 ? n : 1;
     }
 
-    // »ñÈ¡ÎïÀíºËĞÄÊı
+    // è·å–ç‰©ç†æ ¸å¿ƒæ•°
     static size_t PhysicalCores()
     {
 #if defined(_WIN32) || defined(_WIN64)

@@ -1,69 +1,71 @@
-#include "WindowManager.h"
+ï»¿#include "WindowManager.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "resource.h"
 
-// È«¾Öµ¥ÀıÖ¸Õë£¨·½±ãÔÚ WndProc ÖĞ·ÃÎÊµ±Ç° WindowManager£©
+// å…¨å±€å•ä¾‹æŒ‡é’ˆï¼ˆæ–¹ä¾¿åœ¨ WndProc ä¸­è®¿é—®å½“å‰ WindowManagerï¼‰
 WindowManager *WindowManager::s_instance = nullptr;
 
-// ImGui µÄ Win32 ´°¿ÚÏûÏ¢´¦Àíº¯Êı£¨¹Ù·½·â×°£©
+// ImGui çš„ Win32 çª—å£æ¶ˆæ¯å¤„ç†å‡½æ•°ï¼ˆå®˜æ–¹å°è£…ï¼‰
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 WindowManager::WindowManager()
     : m_hwnd(nullptr), m_hInstance(nullptr), m_width(0), m_height(0), m_pd3dDevice(nullptr),
       m_pd3dDeviceContext(nullptr), m_pSwapChain(nullptr), m_mainRenderTargetView(nullptr)
 {
-    s_instance = this; // ±£´æÈ«¾ÖÊµÀı
+    s_instance = this; // ä¿å­˜å…¨å±€å®ä¾‹
 }
 
 WindowManager::~WindowManager()
 {
-    Cleanup(); // Îö¹¹Ê±ÊÍ·Å×ÊÔ´
+    Cleanup(); // ææ„æ—¶é‡Šæ”¾èµ„æº
     s_instance = nullptr;
 }
 
-// ³õÊ¼»¯´°¿Ú£¨×¢²á´°¿ÚÀà + ´´½¨´°¿Ú + ³õÊ¼»¯ D3D11£©
+// åˆå§‹åŒ–çª—å£ï¼ˆæ³¨å†Œçª—å£ç±» + åˆ›å»ºçª—å£ + åˆå§‹åŒ– D3D11ï¼‰
 bool WindowManager::Initialize(HINSTANCE hInstance, int width, int height)
 {
     m_hInstance = hInstance;
     m_width = width;
     m_height = height;
 
-    // ×¢²á´°¿ÚÀà
+    // æ³¨å†Œçª—å£ç±»
     WNDCLASSEX wc = {};
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_CLASSDC;
-    wc.lpfnWndProc = WndProc; // Ö¸¶¨¾²Ì¬»Øµ÷
+    wc.lpfnWndProc = WndProc; // æŒ‡å®šé™æ€å›è°ƒ
     wc.hInstance = hInstance;
-    wc.lpszClassName = _T("ImGuiTemplate");
+    wc.lpszClassName = _T("downLoader");
 
-    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));   // ´óÍ¼±ê£¨ÈÎÎñÀ¸£©
-    wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)); // Ğ¡Í¼±ê£¨±êÌâÀ¸£©
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));   // å¤§å›¾æ ‡ï¼ˆä»»åŠ¡æ ï¼‰
+    wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)); // å°å›¾æ ‡ï¼ˆæ ‡é¢˜æ ï¼‰
 
     RegisterClassEx(&wc);
 
-    // ´´½¨ÎŞ±ß¿ò´°¿Ú
-    m_hwnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED, // ÖÃ¶¥ + Ö§³ÖÍ¸Ã÷
+    // åˆ›å»ºæ— è¾¹æ¡†çª—å£
+    m_hwnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED, // ç½®é¡¶ + æ”¯æŒé€æ˜
                             wc.lpszClassName,
-                            _T("ImGui Template"),
-                            WS_POPUP, // ÎŞ±ß¿ò£¨POPUP ´°¿Ú£©
+                            _T("downLoader"),
+                            WS_POPUP, // æ— è¾¹æ¡†ï¼ˆPOPUP çª—å£ï¼‰
                             100,
                             100,
                             width,
-                            height, // ´°¿ÚÎ»ÖÃºÍ´óĞ¡
+                            height, // çª—å£ä½ç½®å’Œå¤§å°
                             NULL,
                             NULL,
                             hInstance,
                             NULL);
 
     if (!m_hwnd)
+    {
         return false;
+    }
 
-    // ÉèÖÃ´°¿ÚÍ¸Ã÷ÊôĞÔ£¨ÕâÀïÉèÖÃÎªÍêÈ«²»Í¸Ã÷£©
+    // è®¾ç½®çª—å£é€æ˜å±æ€§ï¼ˆè¿™é‡Œè®¾ç½®ä¸ºå®Œå…¨ä¸é€æ˜ï¼‰
     SetLayeredWindowAttributes(m_hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
 
-    // ³õÊ¼»¯ D3D11
+    // åˆå§‹åŒ– D3D11
     if (!CreateDeviceD3D())
     {
         CleanupDeviceD3D();
@@ -77,45 +79,45 @@ bool WindowManager::Initialize(HINSTANCE hInstance, int width, int height)
     return true;
 }
 
-// ÇåÀí´°¿ÚºÍ D3D11
+// æ¸…ç†çª—å£å’Œ D3D11
 void WindowManager::Cleanup()
 {
     CleanupDeviceD3D();
     if (m_hwnd)
     {
         DestroyWindow(m_hwnd);
-        UnregisterClass(_T("ImGuiTemplate"), m_hInstance);
+        UnregisterClass(_T("downLoader"), m_hInstance);
         m_hwnd = nullptr;
     }
 }
 
-// Ã¿Ö¡äÖÈ¾£ºÇåÆÁ + ImGui »æÖÆ + ½»»»»º³å
+// æ¯å¸§æ¸²æŸ“ï¼šæ¸…å± + ImGui ç»˜åˆ¶ + äº¤æ¢ç¼“å†²
 void WindowManager::Present()
 {
-    const float clear_color[4] = {0, 0, 0, 0}; // ±³¾°É«£¨ºÚÉ«£©
+    const float clear_color[4] = {0, 0, 0, 0}; // èƒŒæ™¯è‰²ï¼ˆé»‘è‰²ï¼‰
     m_pd3dDeviceContext->OMSetRenderTargets(1, &m_mainRenderTargetView, NULL);
     m_pd3dDeviceContext->ClearRenderTargetView(m_mainRenderTargetView, clear_color);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     m_pSwapChain->Present(1, 0); // vsync = 1
 }
 
-// ´´½¨Éè±¸ + ½»»»Á´
+// åˆ›å»ºè®¾å¤‡ + äº¤æ¢é“¾
 bool WindowManager::CreateDeviceD3D()
 {
     DXGI_SWAP_CHAIN_DESC sd{};
-    sd.BufferCount = 2;                                // Ë«»º³å
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // RGBA ¸ñÊ½
+    sd.BufferCount = 2;                                // åŒç¼“å†²
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // RGBA æ ¼å¼
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     sd.OutputWindow = m_hwnd;
-    sd.SampleDesc.Count = 1; // ÎŞ¶àÖØ²ÉÑù
+    sd.SampleDesc.Count = 1; // æ— å¤šé‡é‡‡æ ·
     sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // ³£¹æ¶ªÆúÄ£Ê½
+    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // å¸¸è§„ä¸¢å¼ƒæ¨¡å¼
 
     UINT createDeviceFlags = 0;
     D3D_FEATURE_LEVEL featureLevel;
     const D3D_FEATURE_LEVEL featureLevelArray[2] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0};
 
-    // ´´½¨Éè±¸ + ÉÏÏÂÎÄ + ½»»»Á´
+    // åˆ›å»ºè®¾å¤‡ + ä¸Šä¸‹æ–‡ + äº¤æ¢é“¾
     if (D3D11CreateDeviceAndSwapChain(NULL,
                                       D3D_DRIVER_TYPE_HARDWARE,
                                       NULL,
@@ -130,11 +132,12 @@ bool WindowManager::CreateDeviceD3D()
                                       &m_pd3dDeviceContext) != S_OK)
         return false;
 
-    CreateRenderTarget(); // ´´½¨äÖÈ¾Ä¿±ê
+    CreateRenderTarget(); // åˆ›å»ºæ¸²æŸ“ç›®æ ‡
     return true;
 }
 
-// ÊÍ·Å D3D11
+
+// é‡Šæ”¾ D3D11
 void WindowManager::CleanupDeviceD3D()
 {
     CleanupRenderTarget();
@@ -155,7 +158,7 @@ void WindowManager::CleanupDeviceD3D()
     }
 }
 
-// ´´½¨äÖÈ¾Ä¿±ê£¨ºó»º³å ¡ú RTV£©
+// åˆ›å»ºæ¸²æŸ“ç›®æ ‡ï¼ˆåç¼“å†² â†’ RTVï¼‰
 void WindowManager::CreateRenderTarget()
 {
     ID3D11Texture2D *pBackBuffer;
@@ -164,7 +167,7 @@ void WindowManager::CreateRenderTarget()
     pBackBuffer->Release();
 }
 
-// ÊÍ·ÅäÖÈ¾Ä¿±ê
+// é‡Šæ”¾æ¸²æŸ“ç›®æ ‡
 void WindowManager::CleanupRenderTarget()
 {
     if (m_mainRenderTargetView)
@@ -174,28 +177,40 @@ void WindowManager::CleanupRenderTarget()
     }
 }
 
-// ´°¿ÚÏûÏ¢´¦Àíº¯Êı
+// çª—å£æ¶ˆæ¯å¤„ç†å‡½æ•°
 LRESULT WINAPI WindowManager::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    // ÏÈ½»¸ø ImGui µÄ Win32 ÊµÏÖ´¦Àí£¨ÊäÈë¡¢Êó±êµÈ£©
+    // å…ˆäº¤ç»™ ImGui çš„ Win32 å®ç°å¤„ç†ï¼ˆè¾“å…¥ã€é¼ æ ‡ç­‰ï¼‰
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    {
         return true;
-
+    }
     switch (msg)
     {
         case WM_SIZE:
+        {
+
             if (s_instance && s_instance->m_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
             {
-                // ´°¿Ú´óĞ¡µ÷Õû ¡ú ÖØĞÂ´´½¨ RenderTarget
+                // çª—å£å¤§å°è°ƒæ•´ â†’ é‡æ–°åˆ›å»º RenderTarget
                 s_instance->CleanupRenderTarget();
                 s_instance->m_pSwapChain->ResizeBuffers(
                     0, (UINT) LOWORD(lParam), (UINT) HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
                 s_instance->CreateRenderTarget();
             }
             return 0;
+        }
         case WM_DESTROY:
-            PostQuitMessage(0); // ¹Ø±Õ³ÌĞò
+        {
+        
+            PostQuitMessage(0); // å…³é—­ç¨‹åº
             return 0;
+        }
+        default:
+        {
+            // æœªå¤„ç†çš„æ¶ˆæ¯äº¤ç»™ç³»ç»Ÿé»˜è®¤å¤„ç†
+            break;
+        }
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }

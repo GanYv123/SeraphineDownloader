@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "AppLogic.h"
 #include "UIManager.h"
 #include "WindowManager.h"
@@ -13,7 +13,7 @@ public:
     int Run(HINSTANCE hInstance);
 
 private:
-    // ³ÉÔ±¶ÔÏó°´ÒÀÀµË³ĞòÉùÃ÷
+    // æˆå‘˜å¯¹è±¡æŒ‰ä¾èµ–é¡ºåºå£°æ˜
     AppLogic appLogic_;
     UIManager uiManager_;
     std::unique_ptr<WindowManager> windowManager_;

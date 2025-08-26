@@ -1,4 +1,4 @@
-#include "Downloader.h"
+ï»¿#include "Downloader.h"
 #include "AppLogic.h"
 #include <chrono>
 #include <fstream>
@@ -24,7 +24,7 @@ void Downloader::StartDownload(const std::string &url, const std::string &savePa
     if (m_logCallback)
         m_logCallback("Start downloading: " + url, 0);
 
-    // Ìá½»µ½Ïß³Ì³Ø£¬ÈÎÎñÄÚ²¿°ü×° try-catch
+    // æäº¤åˆ°çº¿ç¨‹æ± ï¼Œä»»åŠ¡å†…éƒ¨åŒ…è£… try-catch
     logic.SubmitTask(
         [this, url, savePath]()
         {
@@ -42,7 +42,7 @@ void Downloader::StartDownload(const std::string &url, const std::string &savePa
                 if (m_logCallback)
                     m_logCallback("Unknown task exception", 2);
             }
-            m_downloading = false; // È·±£×´Ì¬ÖØÖÃ
+            m_downloading = false; // ç¡®ä¿çŠ¶æ€é‡ç½®
         });
 }
 
@@ -106,18 +106,18 @@ std::vector<std::string> Downloader::FetchFileList(const std::string &url)
             ss << buffer.data();
         } while (dwSize > 0);
 
-        // ¹Ø±Õ¾ä±ú
+        // å…³é—­å¥æŸ„
         WinHttpCloseHandle(hRequest);
         WinHttpCloseHandle(hConnect);
         WinHttpCloseHandle(hSession);
 
-        // ½âÎö½á¹û£¨·şÎñÆ÷·µ»ØÊÇÎÄ±¾£¬±ÈÈç£º"- Seraphine.zip\n- GameB.zip\n"£©
+        // è§£æç»“æœï¼ˆæœåŠ¡å™¨è¿”å›æ˜¯æ–‡æœ¬ï¼Œæ¯”å¦‚ï¼š"- Seraphine.zip\n- GameB.zip\n"ï¼‰
         std::string line;
         while (std::getline(ss, line))
         {
             if (line.size() > 2 && line[0] == '-')
             {
-                files.push_back(line.substr(2)); // È¥µô "- "
+                files.push_back(line.substr(2)); // å»æ‰ "- "
             }
         }
 

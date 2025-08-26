@@ -1,5 +1,5 @@
-#pragma once
-#include "BS_thread_pool.hpp" // Ïß³Ì³Ø
+ï»¿#pragma once
+#include "BS_thread_pool.hpp" // çº¿ç¨‹æ± 
 #include <future>
 
 struct LogEntry
@@ -26,13 +26,13 @@ public:
     AppLogic();
     ~AppLogic();
 
-    // Ìí¼ÓÈÕÖ¾
+    // æ·»åŠ æ—¥å¿—
     void AddLog(const std::string &message, LogEntry::Level level = LogEntry::Level::Info);
 
-    // »ñÈ¡ÈÕÖ¾ÁĞ±í£¨Ïß³Ì°²È«£©
+    // è·å–æ—¥å¿—åˆ—è¡¨ï¼ˆçº¿ç¨‹å®‰å…¨ï¼‰
     std::vector<LogEntry> GetLogs() const;
 
-    // ¶ÔÍâ±©Â¶ÈÎÎñÌá½»½Ó¿Ú
+    // å¯¹å¤–æš´éœ²ä»»åŠ¡æäº¤æ¥å£
     template <typename F, typename... Args>
     auto SubmitTask(F &&f, Args &&...args)
         -> std::future<typename std::invoke_result_t<F, Args...>>;

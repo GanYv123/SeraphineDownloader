@@ -10,7 +10,7 @@ AppLogic::AppLogic() : m_state(State::Stopped)
     size_t threadCount = CpuInfo::PhysicalCores();
     m_pool = std::make_shared<BS::thread_pool<>>(threadCount);
     std::ostringstream oss;
-    oss << u8"���������ɹ����̳߳��߳���: " << threadCount;
+    oss << u8"线程池已启动 thread num: " << threadCount;
     AddLog(oss.str(), LogEntry::Level::Info);
 }
 
