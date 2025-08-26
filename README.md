@@ -1,58 +1,67 @@
+[🇨🇳 中文](README.zh-CN.md) | [🇺🇸 English](README.md)
+
 # SeraphineDownloader
 
-A simple **Win32 + DirectX11 + ImGui** framework for GUI applications with built-in file downloading support.
+A lightweight **Win32 + DirectX11 + ImGui** framework for GUI applications with built-in file downloading and file management support.
 
 ---
 
-## 📖 项目简介
+## 📌 Project Overview
 
-本项目封装了以下功能模块：
+SeraphineDownloader provides a modular architecture for desktop GUI applications:
 
-- **WindowManager**：窗口创建、DirectX11 设备管理、消息循环封装  
-- **UIManager**：ImGui 初始化、帧循环和渲染  
-- **AppLogic**：应用逻辑（按钮状态、日志、功能处理等）  
-- **Downloader**：基于 WinHTTP 的文件下载模块（支持进度条、日志回调）  
-- **FileManager**：文件解压与本地处理  
+- **WindowManager** – Handles window creation, DirectX11 device management, and message loop.  
+- **UIManager** – Initializes ImGui, manages frame rendering and GUI widgets.  
+- **AppLogic** – Application logic: button states, logging, and core functionality.  
+- **Downloader** – WinHTTP-based file downloader with progress bar and log callback.  
+- **FileManager** – Local file management, including ZIP extraction and shortcut creation.  
 
-应用启动后，可一键从云端下载 `Seraphine.zip`，并实时显示下载进度与日志。
+This project allows users to quickly download open-source tools from GitHub, track download progress, and view real-time logs in a convenient GUI.
 
----
+Example open-source projects used for testing downloads:  
 
-## 🎬 演示效果
-
-👉 ![1](.\docs\1.gif)
-
----
-
-## ⚙️ 编译环境要求
-
-- **Visual Studio 2019 / 2022**
-- **Windows 10 或更高**
-- **C++17** 或更高
-- **Windows 10 SDK**（包含 DirectX SDK，无需单独安装）
+- [Seraphine](https://github.com/Zzaphkiel/Seraphine)  
+- [LeagueAkari](https://github.com/LeagueAkari/LeagueAkari)  
+- [hh-lol-prophet](https://github.com/real-web-world/hh-lol-prophet)  
+- [Frank](https://github.com/Java-S12138/frank)  
 
 ---
 
-## 🛠️ 编译方法
+## 🎬 Demo
 
-1. 打开项目 `.sln` 文件  
-2. 确认项目属性配置：
-   - **C++ → 常规 → Character Set** → `Use Unicode Character Set`  
+![Demo](docs/f1.gif)
+
+---
+
+## ⚙️ System Requirements
+
+- **Windows 10** or later  
+- **Visual Studio 2019 / 2022**  
+- **C++17** or later  
+- **Windows 10 SDK** (DirectX included)
+
+---
+
+## 🛠️ Build Instructions
+
+1. Open the `.sln` solution file in Visual Studio.  
+2. Configure project properties:  
+   - **C++ → General → Character Set** → `Use Unicode Character Set`  
    - **Linker → System → Subsystem** → `Windows (/SUBSYSTEM:WINDOWS)`  
-   - 链接库：`d3d11.lib`, `dxgi.lib`, `d3dcompiler.lib`, `winhttp.lib`  
-3. 编译 **Debug** 或 **Release**，生成 `.exe` 文件  
+   - Link required libraries: `d3d11.lib`, `dxgi.lib`, `d3dcompiler.lib`, `winhttp.lib`  
+3. Build the project in **Debug** or **Release** mode to generate the executable.
 
 ---
 
-## 🚀 功能扩展方向
+## 🚀 Features & Future Directions
 
-- 支持多文件下载队列  
-- 支持断点续传  
-- 下载完成后自动解压并安装  
-- UI 主题美化与国际化支持  
+- Multi-file download queue  
+- Resume interrupted downloads  
+- Automatic extraction and installation after download  
+- UI theming and internationalization support  
 
 ---
 
 ## 📄 License
 
-本项目基于 MIT 协议开源，欢迎自由使用与修改。
+MIT License – free to use, modify, and distribute.

@@ -305,33 +305,47 @@ void UIManager::RenderDownloadProgress()
 void UIManager::RenderLogOutput(AppLogic &logic)
 {
     ImGui::Text(u8"日志输出：");
-    ImGui::BeginChild("LogRegion", ImVec2(0, 160), true, ImGuiWindowFlags_HorizontalScrollbar);
-    for (const auto &entry : logic.GetLogs())
-    {
-        ImVec4 color = ImVec4(1, 1, 1, 1);
-        switch (entry.level)
-        {
-            case LogEntry::Level::Info:
-                color = ImVec4(1, 1, 1, 1);
-                break;
-            case LogEntry::Level::Warn:
-                color = ImVec4(1, 1, 0, 1);
-                break;
-            case LogEntry::Level::Error:
-                color = ImVec4(1, 0, 0, 1);
-                break;
-        }
 
-        ImGui::PushStyleColor(ImGuiCol_Text, color);
-        ImGui::TextWrapped("%s", entry.text.c_str()); // 自动换行
-        ImGui::PopStyleColor();
-    }
-    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+    // 子窗口区域，水平滚动条保留，垂直滚动条自动
+    ImGui::BeginChild("LogRegion", ImVec2(0, 160), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+    // 判断用户是否在滚动底部
+    bool scrollToBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY();
+
+    // 使用回调直接渲染日志
+    logic.ForEachLog(
+        [&](const LogEntry &entry)
+        {
+            ImVec4 color;
+            switch (entry.level)
+            {
+                case LogEntry::Level::Info:
+                    color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+                    break;
+                case LogEntry::Level::Warn:
+                    color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+                    break;
+                case LogEntry::Level::Error:
+                    color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+                    break;
+                default:
+                    color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+                    break;
+            }
+
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            ImGui::TextWrapped("%s", entry.text.c_str()); // 自动换行
+            ImGui::PopStyleColor();
+        });
+
+    // 如果当前滚动在底部，就继续滚动到底部
+    if (scrollToBottom)
         ImGui::SetScrollHereY(1.0f);
 
     ImGui::EndChild();
     ImGui::Spacing();
 }
+
 
 // ---------------- 退出 / 最小化 ----------------
 bool UIManager::RenderExitButton(HWND hwnd)
