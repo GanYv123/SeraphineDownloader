@@ -28,7 +28,7 @@ private:
     void RenderLogOutput(AppLogic &logic);
     bool RenderExitButton(HWND hwnd);
     // 加载中文字体
-    void AddChineseFont(ImGuiIO &io);
+    void AddFontStyle(ImGuiIO &io);
 
     // 成员变量（替代静态局部变量）
     Downloader downloader;

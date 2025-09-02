@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+#include "resource.h"
 #include <windows.h>
 
 UIManager::UIManager(AppLogic &logic) : m_initialized(false)
@@ -24,7 +25,7 @@ bool UIManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext 
     io.IniFilename = NULL; // 不保存布局文件
 
     // 添加中文字体
-    AddChineseFont(io);
+    AddFontStyle(io);
 
     ImGui::StyleColorsDark();
 
@@ -188,7 +189,6 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
                                     logic,
                                     [&](const std::string &msg, int level)
                                     { logic.AddLog(msg, (LogEntry::Level) level); });
-
     }
     if (!extractEnabled)
         ImGui::EndDisabled();
@@ -212,7 +212,6 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
         ImGui::EndDisabled();
     ImGui::SameLine();
 
-
     if (!shortcutEnabled)
         ImGui::BeginDisabled();
     if (ImGui::Button(u8"打开程序", ImVec2(fourthWidth, buttonHeight)))
@@ -234,7 +233,6 @@ void UIManager::RenderFunctionButtons(AppLogic &logic)
     {
         fileManager.CloseProgram([&](const std::string &msg, int level)
                                  { logic.AddLog(msg, (LogEntry::Level) level); });
-
     }
     if (!shortcutEnabled)
         ImGui::EndDisabled();
@@ -346,7 +344,6 @@ void UIManager::RenderLogOutput(AppLogic &logic)
     ImGui::Spacing();
 }
 
-
 // ---------------- 退出 / 最小化 ----------------
 bool UIManager::RenderExitButton(HWND hwnd)
 {
@@ -373,33 +370,64 @@ bool UIManager::RenderExitButton(HWND hwnd)
     return exit;
 }
 
-void UIManager::AddChineseFont(ImGuiIO &io)
+void UIManager::AddFontStyle(ImGuiIO &io)
 {
-    wchar_t *windir = nullptr;
-    size_t len = 0;
-    if (_wdupenv_s(&windir, &len, L"WINDIR") != 0 || !windir)
+    // ---------------- DPI 缩放 ----------------
+    float dpiScale = io.DisplayFramebufferScale.y;
+    float fontSize = 16.0f * dpiScale; // 自适应 DPI
+
+    // ---------------- 英文字体 ----------------
+    HRSRC hRes = FindResource(NULL, MAKEINTRESOURCE(IDR_ENGLISH_FONT), RT_RCDATA);
+    if (!hRes)
         return;
 
-    // 拼接字体路径
-    std::wstring fontPath = std::wstring(windir) + L"\\Fonts\\msyh.ttc";
-    free(windir);
+    HGLOBAL hMem = LoadResource(NULL, hRes);
+    if (!hMem)
+        return;
 
-    // 转 UTF-8
-    int size_needed = WideCharToMultiByte(
-        CP_UTF8, 0, fontPath.c_str(), (int) fontPath.size(), NULL, 0, NULL, NULL);
-    std::string fontPathUtf8(size_needed, 0);
-    WideCharToMultiByte(CP_UTF8,
-                        0,
-                        fontPath.c_str(),
-                        (int) fontPath.size(),
-                        fontPathUtf8.data(),
-                        size_needed,
-                        NULL,
-                        NULL);
+    void *fontData = LockResource(hMem);
+    DWORD fontSizeBytes = SizeofResource(NULL, hRes);
 
-    // 加载字体
-    io.Fonts->AddFontFromFileTTF(
-        fontPathUtf8.c_str(), 16.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+    void *fontDataCopy = malloc(fontSizeBytes);
+    memcpy(fontDataCopy, fontData, fontSizeBytes);
+
+    ImFontConfig engCfg;
+    engCfg.OversampleH = 2; // 水平采样 2 倍
+    engCfg.OversampleV = 2; // 垂直采样 2 倍
+    engCfg.PixelSnapH = false;
+
+    io.Fonts->AddFontFromMemoryTTF(
+        fontDataCopy, fontSizeBytes, fontSize, &engCfg, io.Fonts->GetGlyphRangesDefault());
+
+    // ---------------- 中文字体 ----------------
+    HRSRC hChineseRes = FindResource(NULL, MAKEINTRESOURCE(IDR_CHINESE_FONT), RT_RCDATA);
+    if (!hChineseRes)
+        return;
+
+    HGLOBAL hChineseMem = LoadResource(NULL, hChineseRes);
+    if (!hChineseMem)
+        return;
+
+    void *chineseFontData = LockResource(hChineseMem);
+    DWORD chineseFontSize = SizeofResource(NULL, hChineseRes);
+
+    void *chineseFontDataCopy = malloc(chineseFontSize);
+    memcpy(chineseFontDataCopy, chineseFontData, chineseFontSize);
+
+    ImFontConfig chiCfg;
+    chiCfg.MergeMode = true; // 合并字体
+    chiCfg.OversampleH = 2;  // 抗锯齿提升
+    chiCfg.OversampleV = 2;
+    chiCfg.PixelSnapH = false;
+
+    io.Fonts->AddFontFromMemoryTTF(chineseFontDataCopy,
+                                   chineseFontSize,
+                                   fontSize,
+                                   &chiCfg,
+                                   io.Fonts->GetGlyphRangesChineseFull());
+
+    // ---------------- 额外整体缩放 ----------------
+    io.FontGlobalScale = 1.0f; // 调大到 1.2 或 1.5 试试
 }
 
 void UIManager::EndFrame() { ImGui::Render(); }

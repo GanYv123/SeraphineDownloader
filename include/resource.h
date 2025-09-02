@@ -3,6 +3,8 @@
 // Used by SeraphineDownloader.rc
 //
 #define IDI_ICON1 101
+#define IDR_ENGLISH_FONT 102
+#define IDR_CHINESE_FONT 103
 
 // Next default values for new objects
 //
